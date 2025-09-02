@@ -1,0 +1,67 @@
+openapi: 3.0.3
+info:
+  title: NAVROS Gateway — Portal Lichtara API
+  version: 0.1.0
+paths:
+  /api/agents/{name}/activate:
+    post:
+      summary: Ativa um agent e registra o selo
+      parameters:
+        - in: path
+          name: name
+          required: true
+          schema: { type: string }
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                source: { type: string }
+                selo: { type: string }
+      responses:
+        '200':
+          description: Agent ativado
+  /api/mandalas/{id}:
+    get:
+      summary: Busca mandala do /core
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema: { type: string }
+      responses:
+        '200':
+          description: Documento markdown
+  /api/insights/decode:
+    post:
+      summary: LUMORA decodifica texto
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                text: { type: string }
+      responses:
+        '200':
+          description: Insights gerados
+  /api/strategy/plan:
+    post:
+      summary: FINCE propõe prioridades
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                objectives:
+                  type: array
+                  items: { type: string }
+      responses:
+        '200':
+          description: Plano estratégico
+
