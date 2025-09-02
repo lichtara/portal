@@ -8,7 +8,12 @@ Aplicações, serviços e agents operacionais da Constelação.
 - Infraestrutura: `infra/`
 - CI: `.github/workflows/ci-portal.yml`
 
-Licenças: ver repositório `license`. Artefatos de Campo (mandalas/rituais) — Lichtara License v2; utilidades/SDKs, se desejado, v1.
+Licenças
+- Artefatos de Campo (mandalas, rituais, conteúdos vivos, metodologias, inovação ética): Lichtara License v2.0
+  - https://github.com/lichtara/license/blob/main/lichtara_licence_v2.0/lichtara_licence_v2.0.md
+- Código técnico reutilizável (utilitários, SDKs, ferramentas, serviços): Lichtara License v1.0 (quando desejado)
+  - https://github.com/lichtara/license/blob/main/lichtara_licence_v1.0/LICHTARA-LICENSEv1.0.md
+Consulte `portal/LICENSES.md` para o mapeamento e links oficiais.
 
 ## Estrutura mínima
 ```
@@ -75,4 +80,3 @@ Exemplo de passo (ajuste `<org>`):
 
 ## Sobre
 Referencie as licenças no repositório `license` e apresente na tela "Sobre" da UI.
-
