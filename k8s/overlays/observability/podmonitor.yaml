@@ -1,0 +1,19 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PodMonitor
+metadata:
+  name: syntaris-podmonitor
+  labels:
+    app.kubernetes.io/name: syntaris
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/part-of: lichtara
+  podMetricsEndpoints:
+    - port: http
+      path: /metrics
+      interval: 30s
+      relabelings:
+        - action: replace
+          sourceLabels: [pod]
+          targetLabel: instance
+

@@ -1,0 +1,39 @@
+apiVersion: monitoring.coreos.com/v1
+kind: PrometheusRule
+metadata:
+  name: syntaris-prometheus-rules
+  labels:
+    app.kubernetes.io/name: syntaris
+spec:
+  groups:
+    - name: http-alerts
+      rules:
+        - alert: HighErrorRate
+          expr: |
+            sum(rate(http_requests_total{status=~"5.."}[5m])) by (service)
+              /
+            sum(rate(http_requests_total[5m])) by (service) > 0.05
+          for: 10m
+          labels: { severity: warning }
+          annotations:
+            summary: "Erro 5xx > 5% ({{ $labels.service }})"
+            description: "Taxa de erro acima de 5% por 10m."
+        - alert: HighLatencyP95
+          expr: |
+            histogram_quantile(0.95,
+              sum(rate(http_request_duration_seconds_bucket[5m])) by (le,service)
+            ) > 0.5
+          for: 10m
+          labels: { severity: warning }
+          annotations:
+            summary: "P95 > 500ms ({{ $labels.service }})"
+            description: "Latência p95 acima do alvo por 10m."
+        - alert: NoHeartbeatLunara
+          expr: |
+            increase(lunara_heartbeat_total[10m]) == 0
+          for: 15m
+          labels: { severity: critical }
+          annotations:
+            summary: "Heartbeat LUNARA ausente"
+            description: "Nenhum incremento de heartbeat em 10m."
+

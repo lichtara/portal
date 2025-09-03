@@ -1,0 +1,29 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: alertmanager-syntaris
+  labels:
+    alertmanager: main
+type: Opaque
+stringData:
+  alertmanager.yaml: |
+    route:
+      receiver: default
+      group_by: ["service"]
+      group_wait: 30s
+      group_interval: 5m
+      repeat_interval: 2h
+    receivers:
+      - name: default
+        # Exemplos (habilite o que usar):
+        # slack_configs:
+        #   - channel: "#alerts"
+        #     send_resolved: true
+        #     api_url: ${SLACK_WEBHOOK_URL}
+        # email_configs:
+        #   - to: ops@lichtara.com
+        #     from: alertas@lichtara.com
+        #     smarthost: smtp.example.com:587
+        #     auth_username: alertas@lichtara.com
+        #     auth_password: ${SMTP_PASSWORD}
+

@@ -1,0 +1,21 @@
+# Exemplo de valores para Helm/Kustomize overlays
+labels:
+  app.kubernetes.io/part-of: lichtara
+
+grafana:
+  dashboards:
+    syntaris:
+      file: k8s/overlays/observability/grafana-dashboard-syntaris.json
+
+prometheus:
+  servicemonitor:
+    enabled: true
+  podmonitor:
+    enabled: false
+
+alertmanager:
+  secretName: alertmanager-syntaris
+
+otel:
+  otlpEndpoint: "http://otel-collector:4318"
+

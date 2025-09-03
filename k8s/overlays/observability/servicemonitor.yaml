@@ -1,0 +1,23 @@
+apiVersion: monitoring.coreos.com/v1
+kind: ServiceMonitor
+metadata:
+  name: syntaris-servicemonitor
+  labels:
+    app.kubernetes.io/name: syntaris
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/part-of: lichtara
+  namespaceSelector:
+    any: true
+  endpoints:
+    - port: http
+      path: /metrics
+      interval: 30s
+      scheme: http
+      honorLabels: true
+      metricRelabelings:
+        - action: replace
+          sourceLabels: [__address__]
+          targetLabel: instance
+
