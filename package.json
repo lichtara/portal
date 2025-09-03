@@ -6,12 +6,14 @@
     "services/*"
   ],
   "engines": {
-    "node": ">=18.18 <=22",
-    "npm": ">=9"
+    "node": ">=20 <21",
+    "npm": ">=10"
   },
   "packageManager": "npm@10",
   "scripts": {
+    "bootstrap": "npm ci && npm ci -w apps/app-web && npm ci -w services/syntaris-harmony",
     "build": "npm run build -w apps/app-web",
+    "build:all": "npm run build -w apps/app-web",
     "lint": "npm run lint -w apps/app-web",
     "format": "npm run format -w apps/app-web",
     "format:check": "npm run format:check -w apps/app-web",
