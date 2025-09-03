@@ -1,0 +1,4 @@
+node_modules/
+apps/app-web/dist/
+apps/app-web/.vite/
+apps/app-web/content/core/

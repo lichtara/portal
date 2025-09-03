@@ -6,8 +6,9 @@
   ],
   "scripts": {
     "build": "npm run build -w apps/app-web",
-    "lint": "echo lint placeholder",
+    "lint": "npm run lint -w apps/app-web",
+    "format": "npm run format -w apps/app-web",
+    "format:check": "npm run format:check -w apps/app-web",
     "test": "echo test placeholder"
   }
 }
-
