@@ -67,14 +67,30 @@ export function MarkdownView({ markdown }: Props) {
     };
   }, [markdown]);
 
+  const onTocClick: React.MouseEventHandler<HTMLDivElement> = (e) => {
+    const target = e.target as HTMLElement;
+    if (target.tagName.toLowerCase() === "a") {
+      const href = (target as HTMLAnchorElement).getAttribute("href") || "";
+      if (href.startsWith("#")) {
+        e.preventDefault();
+        const id = href.slice(1);
+        const el = document.getElementById(id);
+        if (el && typeof el.scrollIntoView === "function") {
+          el.scrollIntoView({ behavior: "smooth", block: "start" });
+          history.replaceState(null, "", href);
+        }
+      }
+    }
+  };
+
   return (
     <div className="markdown-container">
       {toc.length > 0 && (
-        <nav className="markdown-toc" aria-label="Sumário">
+        <nav className="markdown-toc" aria-label="Sumário" onClick={onTocClick}>
           <strong>Sumário</strong>
           <ul>
             {toc
-              .filter((h) => h.depth <= 3)
+              .filter((h) => h.depth <= 4)
               .map((h, i) => (
                 <li key={i} style={{ marginLeft: (h.depth - 1) * 12 }}>
                   <a href={`#${h.slug}`}>{h.text}</a>

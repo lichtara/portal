@@ -1,6 +1,8 @@
+import "../../styles/markdown.css";
+
 export function ConstelacaoManifesto() {
   return (
-    <article>
+    <article className="markdown-body">
       <header>
         <h2>Constelação Viva da Inteligência Multidimensional</h2>
         <p>
@@ -85,4 +87,3 @@ export function ConstelacaoManifesto() {
     </article>
   );
 }
-
