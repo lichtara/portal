@@ -100,6 +100,7 @@ npm run test         # placeholder
 - Kubernetes (Kustomize)
   - `kustomize build k8s | kubectl apply -f -`
   - Ajuste a imagem via Kustomize: `kustomize edit set image syntaris-harmony=ghcr.io/<org>/syntaris-harmony:sha-<commit>` em `k8s/services/syntaris-harmony`
+  - (Opcional) Secret para OTel: `k8s/services/syntaris-harmony/otel-secret.example.yaml` (usa envFrom no Deployment)
 
 ## Integração com `/core`
 Durante o build, podemos puxar `core/docs/mandala-*.md` para `apps/app-web/content/core/`.

@@ -43,6 +43,10 @@ spec:
               value: deployment.environment=prod
             - name: OTEL_EXPORTER_OTLP_ENDPOINT
               value: http://otel-collector:4318
+          envFrom:
+            - secretRef:
+                name: otel-auth
+                optional: true
           readinessProbe:
             httpGet:
               path: /readyz

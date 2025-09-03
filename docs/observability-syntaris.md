@@ -280,3 +280,36 @@ OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4318
 5. Conectar Grafana (Prometheus/Tempo/Loki) e importar o painel.
 6. Ativar Alertmanager com as regras mínimas.
 
+---
+
+## Getting Started rápido (produção)
+
+1. Build/push da imagem (CI já faz para GHCR):
+   - Imagem: `ghcr.io/<org>/syntaris-harmony:{sha,latest}`
+
+2. Configurar OTel (se o backend exigir autenticação):
+   - Crie um Secret com endpoint e cabeçalhos (exemplo):
+
+```yaml
+kubectl apply -f k8s/services/syntaris-harmony/otel-secret.example.yaml
+```
+
+   - Ajuste `OTEL_EXPORTER_OTLP_ENDPOINT` e `OTEL_EXPORTER_OTLP_HEADERS` para seu provedor.
+     Exemplos de headers:
+     - Grafana Cloud: `Authorization=Bearer <TOKEN>`
+     - Honeycomb: `x-honeycomb-team=<API_KEY>,x-honeycomb-dataset=<DATASET>`
+
+3. Aplicar manifests com Kustomize:
+
+```bash
+kustomize build k8s | kubectl apply -f -
+```
+
+4. Verificar:
+   - ServiceMonitor detecta Services com porta `http` e label `app.kubernetes.io/part-of=lichtara`.
+   - `kubectl port-forward svc/syntaris-harmony 8080:80` e acesse:
+     - `http://localhost:8080/metrics`
+     - `http://localhost:8080/healthz`
+     - `http://localhost:8080/readyz`
+   - No backend de traços, procure pelo serviço `syntaris-harmony`.
+
