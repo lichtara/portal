@@ -7,6 +7,7 @@ export default function HomePage() {
       <ConstelacaoManifesto />
       <nav>
         <ul>
+          <li><a href="/docs">/docs</a></li>
           <li><a href="/mandalas">/mandalas</a></li>
           <li><a href="/mandalas?id=mandala-agents">/mandalas?id=mandala-agents</a></li>
           <li><a href="/mandalas?id=mandala-agents-condensado">/mandalas?id=mandala-agents-condensado</a></li>
