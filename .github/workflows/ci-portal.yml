@@ -9,6 +9,7 @@ jobs:
       SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
       SENTRY_RELEASE: ${{ github.sha }}
       VITE_SENTRY_RELEASE: ${{ github.sha }}
+      SENTRY_API_BASE: ${{ vars.SENTRY_API_BASE || 'https://de.sentry.io/api/0' }}
     steps:
       - uses: actions/checkout@v4
       - name: Node
@@ -37,6 +38,15 @@ jobs:
         run: npm run lint -w apps/app-web
       - name: Build (app-web)
         run: npm run build -w apps/app-web
+      - name: Verify Sentry release (best-effort)
+        if: env.SENTRY_AUTH_TOKEN != ''
+        run: |
+          set -e
+          echo "Checking release ${SENTRY_RELEASE} in org ${SENTRY_ORG} project ${SENTRY_PROJECT}"
+          curl -sf \
+            -H "Authorization: Bearer ${SENTRY_AUTH_TOKEN}" \
+            "${SENTRY_API_BASE}/organizations/${SENTRY_ORG}/releases/${SENTRY_RELEASE}/" \
+            | jq '.version, .projects[0].slug' || echo "Release not found yet (may be async)"
       - name: Audit dependencies (npm audit)
         run: npm audit --workspace apps/app-web || true
       - name: License report
