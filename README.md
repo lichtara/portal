@@ -9,6 +9,8 @@ Aplicações, serviços e agents operacionais da Constelação.
 - APIs e docs: `docs/`
 - Infraestrutura: `infra/`
 - CI: `.github/workflows/ci-portal.yml`
+ - Docker Build GHCR (syntaris-harmony): `.github/workflows/build-syntaris.yml`
+ - Deploy K8s (syntaris-harmony): `.github/workflows/deploy-syntaris.yml`
 
 ## Docs
 - Mandala Agents (completo): `docs/mandala-agents.md` → `/mandalas?id=mandala-agents`

@@ -299,17 +299,25 @@ kubectl apply -f k8s/services/syntaris-harmony/otel-secret.example.yaml
      - Grafana Cloud: `Authorization=Bearer <TOKEN>`
      - Honeycomb: `x-honeycomb-team=<API_KEY>,x-honeycomb-dataset=<DATASET>`
 
-3. Aplicar manifests com Kustomize:
+3. (Opcional) Deploy via GitHub Actions
+
+Crie os secrets no repositório (Settings → Secrets and variables → Actions):
+- `KUBE_CONFIG` (kubeconfig em base64 ou texto puro)
+- `GRAFANA_CLOUD_OTLP_ENDPOINT` (ex.: https://otlp-gateway-<region>.grafana.net/otlp)
+- `GRAFANA_CLOUD_API_TOKEN` (token do Grafana Cloud)
+
+Execute manualmente o workflow “Deploy syntaris-harmony” e informe `namespace` (opcional) e `imageTag`.
+
+4. Aplicar manifests com Kustomize (alternativa manual):
 
 ```bash
 kustomize build k8s | kubectl apply -f -
 ```
 
-4. Verificar:
+5. Verificar:
    - ServiceMonitor detecta Services com porta `http` e label `app.kubernetes.io/part-of=lichtara`.
    - `kubectl port-forward svc/syntaris-harmony 8080:80` e acesse:
      - `http://localhost:8080/metrics`
      - `http://localhost:8080/healthz`
      - `http://localhost:8080/readyz`
    - No backend de traços, procure pelo serviço `syntaris-harmony`.
-
