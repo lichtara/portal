@@ -6,6 +6,7 @@ export default function MandalasPage() {
   const [md, setMd] = useState<string>("");
   const [id, setId] = useState<string>("");
   const [error, setError] = useState<string>("");
+  const [path, setPath] = useState<string>("");
 
   // Try to discover available mandalas via import.meta.glob (Vite-like bundlers)
   const available = useMemo(() => {
@@ -41,6 +42,7 @@ export default function MandalasPage() {
     const gotPath = params.get("path") || "";
     const got = gotPath || gotId;
     setId(got);
+    setPath(gotPath);
     if (!got) return;
 
     const tryFetch = () => {
@@ -74,6 +76,49 @@ export default function MandalasPage() {
       .catch(() => tryImport().then(setMd).catch((e) => setError(String(e))));
   }, []);
 
+  // Extract title from markdown frontmatter or first H1
+  function extractTitle(mdText: string): string | undefined {
+    const fm = mdText.match(/^---[\s\S]*?---/);
+    if (fm) {
+      const t = fm[0].match(/\btitle\s*:\s*"([^"]+)"/);
+      if (t?.[1]) return t[1];
+    }
+    const h1 = mdText.split(/\r?\n/).find((l) => /^#\s+/.test(l));
+    if (h1) return h1.replace(/^#\s+/, "").trim();
+    return undefined;
+  }
+
+  function stripFrontmatter(mdText: string): string {
+    return mdText.replace(/^---[\s\S]*?---\s*/, "");
+  }
+
+  const pageTitle = useMemo(() => (md ? extractTitle(md) : undefined), [md]);
+  const displayMd = useMemo(() => (md ? stripFrontmatter(md) : md), [md]);
+
+  useEffect(() => {
+    if (pageTitle) {
+      document.title = `${pageTitle} — Portal Lichtara`;
+    } else {
+      document.title = `Mandalas — Portal Lichtara`;
+    }
+  }, [pageTitle]);
+
+  const crumbs = useMemo(() => {
+    if (!path) return [] as string[];
+    const nice = (s: string) => {
+      const map: Record<string, string> = {
+        agents: "Agents",
+        nucleo: "Núcleo",
+        navegadores: "Navegadores",
+        harmonizadores: "Harmonizadores",
+        guardioes: "Guardiões",
+        ativadores: "Ativadores",
+      };
+      return map[s] || s.replace(/\.[^.]+$/, "").replace(/(^|[-_/])([a-z])/g, (_, p1, p2) => (p1 ? " " : "") + p2.toUpperCase());
+    };
+    return path.split("/").map(nice);
+  }, [path]);
+
   return (
     <main>
       <h1>Mandalas</h1>
@@ -94,7 +139,15 @@ export default function MandalasPage() {
         </>
       )}
       {error && <p>Erro ao carregar: {error}</p>}
-      {md ? <MarkdownView markdown={md} /> : null}
+      {pageTitle && (
+        <header>
+          <h2>{pageTitle}</h2>
+          {crumbs.length > 0 && (
+            <p style={{ color: "#666", marginTop: -8 }}>{crumbs.join(" / ")}</p>
+          )}
+        </header>
+      )}
+      {md ? <MarkdownView markdown={displayMd} /> : null}
     </main>
   );
 }
