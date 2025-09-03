@@ -26,3 +26,10 @@ jobs:
           mkdir -p apps/app-web/content/core
           rsync -a tmp-core/docs/ apps/app-web/content/core/ || true
       - run: echo "lint/test placeholders"
+      - name: Upload core content artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: core-content
+          path: |
+            apps/app-web/content/core
