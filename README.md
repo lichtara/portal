@@ -10,6 +10,11 @@ Aplicações, serviços e agents operacionais da Constelação.
 - Infraestrutura: `infra/`
 - CI: `.github/workflows/ci-portal.yml`
 
+## Docs
+- Mandala Agents (completo): `docs/mandala-agents.md` → `/mandalas?id=mandala-agents`
+- Mandala Agents (condensado): `docs/mandala-agents-condensado.md` → `/mandalas?id=mandala-agents-condensado`
+- Mandala das 5 Pétalas (pesquisa): `docs/mandala-pesquisa.md` → `/mandalas?id=mandala-pesquisa`
+
 Licenças
 - Artefatos de Campo (mandalas, rituais, conteúdos vivos, metodologias, inovação ética): Lichtara License v2.0
   - https://github.com/lichtara/license/blob/main/lichtara_licence_v2.0/lichtara_licence_v2.0.md
