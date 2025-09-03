@@ -18,8 +18,8 @@ spec:
     spec:
       containers:
         - name: syntaris-harmony
-          # Substitua pela imagem publicada deste serviço
-          image: ghcr.io/lichtara/syntaris-harmony:latest
+          # Imagem base; Kustomize reescreve via images: em kustomization.yaml
+          image: syntaris-harmony:latest
           imagePullPolicy: IfNotPresent
           ports:
             - name: http
@@ -61,4 +61,3 @@ spec:
             limits:
               cpu: 250m
               memory: 256Mi
-

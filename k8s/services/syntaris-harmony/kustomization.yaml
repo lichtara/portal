@@ -3,4 +3,7 @@ kind: Kustomization
 resources:
   - deployment.yaml
   - service.yaml
-
+images:
+  - name: syntaris-harmony
+    newName: ghcr.io/lichtara/syntaris-harmony
+    newTag: latest

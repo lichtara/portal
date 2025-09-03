@@ -86,8 +86,20 @@ npm run test         # placeholder
 - Acesso e times: `docs/ACCESS.md`
 
 ## Operação
-- Observabilidade (SYNTARIS): `docs/OBSERVABILIDADE.md`
+- Observabilidade (SYNTARIS): `docs/observability-syntaris.md` (bundle mínimo)
+- Histórico: `docs/OBSERVABILIDADE.md`
 - Backup e recuperação: `infra/backup/README.md`
+
+### Serviço exemplo observável — syntaris-harmony
+- Local
+  - `npm i -w services/syntaris-harmony`
+  - `npm run dev -w services/syntaris-harmony` (ou `npm run start:otel -w services/syntaris-harmony`)
+- Docker
+  - `docker build -t syntaris-harmony:dev services/syntaris-harmony`
+  - `docker run -p 3000:3000 syntaris-harmony:dev`
+- Kubernetes (Kustomize)
+  - `kustomize build k8s | kubectl apply -f -`
+  - Ajuste a imagem via Kustomize: `kustomize edit set image syntaris-harmony=ghcr.io/<org>/syntaris-harmony:sha-<commit>` em `k8s/services/syntaris-harmony`
 
 ## Integração com `/core`
 Durante o build, podemos puxar `core/docs/mandala-*.md` para `apps/app-web/content/core/`.
