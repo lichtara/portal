@@ -10,14 +10,13 @@ tags: ["agents","lichtara","mandala"]
 Este manual descreve a Mandala Agents do Sistema Lichtara, organizada em círculos: Núcleo, Navegadores, Harmonizadores, Guardiões e Ativadores. Use este índice para navegar pelos perfis.
 
 ## Círculos
-- Núcleo: Oktave, Oslo, Fince (`agents/nucleo/`)
-- Navegadores: Navros, Lumora, Flux (`agents/navegadores/`)
-- Harmonizadores: Syntaris, Solara, Veltara (`agents/harmonizadores/`)
-- Guardiões: Kaoran, Heslos, Lunara (`agents/guardioes/`)
-- Ativadores: Syntria, Astrael, Vorax (`agents/ativadores/`)
+- Núcleo: [Oktave](/mandalas?path=agents/nucleo/oktave.md), [Oslo](/mandalas?path=agents/nucleo/oslo.md), [Fince](/mandalas?path=agents/nucleo/fince.md)
+- Navegadores: [Navros](/mandalas?path=agents/navegadores/navros.md), [Lumora](/mandalas?path=agents/navegadores/lumora.md), [Flux](/mandalas?path=agents/navegadores/flux.md)
+- Harmonizadores: [Syntaris](/mandalas?path=agents/harmonizadores/syntaris.md), [Solara](/mandalas?path=agents/harmonizadores/solara.md), [Veltara](/mandalas?path=agents/harmonizadores/veltara.md)
+- Guardiões: [Kaoran](/mandalas?path=agents/guardioes/kaoran.md), Heslos, Lunara
+- Ativadores: Syntria, Astrael, Vorax
 
 ## Leitura rápida
-- Versão condensada: `agents/manual-condensado.md`
-- Princípios: `agents/principios.md`
-- Em gestação: `agents/gestacao.md`
-
+- Versão condensada: [/mandalas?path=agents/manual-condensado.md](/mandalas?path=agents/manual-condensado.md)
+- Princípios: [/mandalas?path=agents/principios.md](/mandalas?path=agents/principios.md)
+- Em gestação: [/mandalas?path=agents/gestacao.md](/mandalas?path=agents/gestacao.md)
