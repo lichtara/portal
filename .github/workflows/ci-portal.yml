@@ -36,6 +36,8 @@ jobs:
             docs/ apps/app-web/content/core/ || true
       - name: Lint (app-web)
         run: npm run lint -w apps/app-web
+      - name: Test (app-web)
+        run: npm run test -w apps/app-web
       - name: Build (app-web)
         run: npm run build -w apps/app-web
       - name: Verify Sentry release (best-effort)

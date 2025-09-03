@@ -49,11 +49,57 @@ if (dsn) {
       if (event.request && event.request.headers) {
         const headers = event.request.headers as Record<string, unknown>
         for (const k of Object.keys(headers)) {
-          if (k.toLowerCase() === 'authorization') {
-            headers[k] = '[Filtered]'
-          }
+          if (k.toLowerCase() === 'authorization') headers[k] = '[Filtered]'
         }
       }
+
+      const emailRe = /[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/gi
+      const cpfRe = /\b\d{3}\.\d{3}\.\d{3}-\d{2}\b/g
+      const redact = (s: string) => s.replace(emailRe, '[redacted-email]').replace(cpfRe, '[redacted-cpf]')
+
+      // Redact tokens in URLs
+      if (event.request?.url) {
+        try {
+          const u = new URL(event.request.url)
+          for (const key of u.searchParams.keys()) {
+            if (/token|key|secret|password/i.test(key)) u.searchParams.set(key, '[Filtered]')
+          }
+          event.request.url = u.toString()
+        } catch {}
+      }
+
+      const sanitize = (val: unknown): unknown => {
+        if (!val) return val
+        if (typeof val === 'string') return redact(val)
+        if (Array.isArray(val)) return val.map(sanitize)
+        if (typeof val === 'object') {
+          const out: Record<string, unknown> = {}
+          for (const [k, v] of Object.entries(val as Record<string, unknown>)) {
+            out[k] = sanitize(v)
+          }
+          return out
+        }
+        return val
+      }
+
+      // Sanitize user, tags, extra, contexts
+      if (event.user) {
+        const s = sanitize(event.user) as typeof event.user
+        event.user = s
+      }
+      if (event.extra) {
+        const s = sanitize(event.extra) as typeof event.extra
+        event.extra = s
+      }
+      if (event.tags) {
+        const s = sanitize(event.tags) as typeof event.tags
+        event.tags = s
+      }
+      if (event.contexts) {
+        const s = sanitize(event.contexts) as typeof event.contexts
+        event.contexts = s
+      }
+
       return event
     },
   })
