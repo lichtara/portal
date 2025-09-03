@@ -20,7 +20,11 @@ jobs:
       - name: Copy portal docs into app content
         run: |
           mkdir -p apps/app-web/content/core
-          rsync -a --include 'mandala-*.md' --exclude '*' docs/ apps/app-web/content/core/ || true
+          rsync -a --prune-empty-dirs \
+            --include 'agents/***' \
+            --include 'mandala-*.md' \
+            --exclude '*' \
+            docs/ apps/app-web/content/core/ || true
       - name: Lint (app-web)
         run: npm run lint -w apps/app-web
       - name: Build (app-web)

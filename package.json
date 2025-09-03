@@ -19,5 +19,9 @@
   },
   "dependencies": {
     "@sentry/browser": "^10.9.0"
+  },
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^7.18.0",
+    "@typescript-eslint/parser": "^7.18.0"
   }
 }

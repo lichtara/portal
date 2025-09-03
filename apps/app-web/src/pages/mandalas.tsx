@@ -37,13 +37,16 @@ export default function MandalasPage() {
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    const got = params.get("id") || "";
+    const gotId = params.get("id") || "";
+    const gotPath = params.get("path") || "";
+    const got = gotPath || gotId;
     setId(got);
     if (!got) return;
 
-    const tryFetch = () =>
-      fetch(`/content/core/${got}.md`)
-        .then((r) => (r.ok ? r.text() : Promise.reject(r.statusText)));
+    const tryFetch = () => {
+      const url = gotPath ? `/content/core/${got}` : `/content/core/${got}.md`;
+      return fetch(url).then((r) => (r.ok ? r.text() : Promise.reject(r.statusText)));
+    };
 
     const tryImport = async () => {
       try {
@@ -51,8 +54,10 @@ export default function MandalasPage() {
         const viteLike = import.meta as unknown as {
           glob?: (pattern: string, opts?: Record<string, unknown>) => GlobMap;
         };
-        const mods: GlobMap = viteLike.glob?.("../../content/core/*.md", { as: "raw" }) || {};
-        const key = Object.keys(mods).find((p) => p.endsWith(`/${got}.md`));
+        const mods: GlobMap = viteLike.glob?.("../../content/core/**/*.md", { as: "raw" }) || {};
+        const key = gotPath
+          ? Object.keys(mods).find((p) => p.endsWith(`/${gotPath}`))
+          : Object.keys(mods).find((p) => p.endsWith(`/${got}.md`));
         if (key) {
           const mod = mods[key];
           const content = typeof mod === "function" ? await mod() : mod;

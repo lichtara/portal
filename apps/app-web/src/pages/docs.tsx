@@ -1,10 +1,11 @@
 import { useEffect, useMemo, useState } from "react";
 import "../styles/markdown.css";
 
-type DocItem = { id: string; title: string };
+type DocItem = { title: string; path: string };
 
 export default function DocsPage() {
-  const [docs, setDocs] = useState<DocItem[]>([]);
+  const [agents, setAgents] = useState<DocItem[]>([]);
+  const [mandalas, setMandalas] = useState<DocItem[]>([]);
 
   const globMap = useMemo(() => {
     try {
@@ -12,50 +13,51 @@ export default function DocsPage() {
       const viteLike = import.meta as unknown as {
         glob?: (pattern: string, opts?: Record<string, unknown>) => GlobMap;
       };
-      const mods: GlobMap = viteLike.glob?.("../../content/core/*.md", { as: "raw" }) || {};
+      const mods: GlobMap = viteLike.glob?.("../../content/core/**/*.md", { as: "raw" }) || {};
       return mods as GlobMap;
     } catch {
-      return {} as Record<string, never> as Record<string, (() => Promise<string>) | string>;
+      return {} as Record<string, (() => Promise<string>) | string>;
     }
   }, []);
 
   useEffect(() => {
     async function load() {
-      const entries: DocItem[] = [];
       const keys = Object.keys(globMap);
-      if (keys.length) {
-        for (const p of keys) {
-          const id = p.match(/([^/]+)\.md$/)?.[1] || p;
-          let raw = "";
-          try {
-            const mod = (globMap as Record<string, (() => Promise<string>) | string>)[p];
-            const content = typeof mod === "function" ? await mod() : mod;
-            raw = String(content);
-          } catch {}
-          const title = extractTitle(raw) || id;
-          entries.push({ id, title });
+      const rel = (full: string) => full.replace(/^.*\/content\/core\//, "");
+      const loadTitle = async (mod: (() => Promise<string>) | string) => {
+        try {
+          const content = typeof mod === "function" ? await mod() : mod;
+          return extractTitle(String(content));
+        } catch {
+          return undefined;
         }
-        setDocs(entries.sort((a, b) => a.title.localeCompare(b.title)));
+      };
+      if (keys.length) {
+        const a: DocItem[] = [];
+        const m: DocItem[] = [];
+        for (const p of keys) {
+          const r = rel(p);
+          // classify
+          if (r.startsWith("agents/")) {
+            const title = (await loadTitle(globMap[p])) || r.replace(/^agents\//, "");
+            a.push({ title, path: r });
+          } else if (/^mandala-.*\.md$/.test(r)) {
+            const title = (await loadTitle(globMap[p])) || r.replace(/\.md$/, "");
+            m.push({ title, path: r });
+          }
+        }
+        a.sort((x, y) => x.title.localeCompare(y.title));
+        m.sort((x, y) => x.title.localeCompare(y.title));
+        setAgents(a);
+        setMandalas(m);
         return;
       }
-      // Fallback: known docs and fetch to infer title
-      const fallback = [
-        "mandala-agents",
-        "mandala-agents-condensado",
-        "mandala-pesquisa",
-        "mandala-petalas",
-      ];
-      const fetched: DocItem[] = [];
-      for (const id of fallback) {
-        try {
-          const res = await fetch(`/content/core/${id}.md`);
-          const raw = res.ok ? await res.text() : "";
-          fetched.push({ id, title: extractTitle(raw) || id });
-        } catch {
-          fetched.push({ id, title: id });
-        }
-      }
-      setDocs(fetched);
+      // Fallback when glob is not available (serve from static)
+      setMandalas([
+        { title: "Mandala Agents", path: "mandala-agents.md" },
+        { title: "Mandala Agents Condensado", path: "mandala-agents-condensado.md" },
+        { title: "Mandala Pesquisa", path: "mandala-pesquisa.md" },
+      ]);
     }
     load();
   }, [globMap]);
@@ -63,14 +65,28 @@ export default function DocsPage() {
   return (
     <main className="markdown-body">
       <h1>Documentos do Portal</h1>
-      <p>Selecione um documento para visualizar:</p>
-      <ul>
-        {docs.map((d) => (
-          <li key={d.id}>
-            <a href={`/mandalas?id=${d.id}`}>{d.title}</a>
-          </li>
-        ))}
-      </ul>
+      <section>
+        <h2>Manual dos Agents</h2>
+        {agents.length === 0 && <p>Em breve…</p>}
+        <ul>
+          {agents.map((d) => (
+            <li key={d.path}>
+              <a href={`/mandalas?path=${encodeURIComponent(d.path)}`}>{d.title}</a>
+            </li>
+          ))}
+        </ul>
+      </section>
+      <section>
+        <h2>Pesquisa (Mandalas)</h2>
+        {mandalas.length === 0 && <p>Em breve…</p>}
+        <ul>
+          {mandalas.map((d) => (
+            <li key={d.path}>
+              <a href={`/mandalas?path=${encodeURIComponent(d.path)}`}>{d.title}</a>
+            </li>
+          ))}
+        </ul>
+      </section>
     </main>
   );
 }
