@@ -1,0 +1,24 @@
+# Gitleaks configuration for Portal Lichtara
+
+[extend]
+useDefault = true
+
+[allowlist]
+regexes = [
+  '''(?i)your-.*-key-here''',
+  '''localhost(:\d+)?''',
+  '''example\.com'''
+]
+
+[[rules]]
+id = "lichtara-op-template"
+regex = '''op://[A-Za-z0-9 _\-/]+/[A-Za-z0-9 _\-/]+/[A-Za-z0-9 _\-/]+'''
+allow = true
+
+[[rules]]
+id = "lichtara-assistant-id"
+regex = '''\bassist(?:ant)?_[A-Za-z0-9]{8,}'''
+entropy = 0.0
+path = '''(DEPLOY\.md|\.env\.example|\.md)$'''
+allow = true
+

@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+TOP="$(git rev-parse --show-toplevel)"
+BIN_DIR="$TOP/.bin"
+
+if ! command -v gitleaks >/dev/null 2>&1; then
+  echo "[pre-commit] Installing gitleaks locally..." >&2
+  mkdir -p "$BIN_DIR"
+  curl -sSfL https://raw.githubusercontent.com/gitleaks/gitleaks/master/install.sh | bash -s -- -b "$BIN_DIR"
+  export PATH="$BIN_DIR:$PATH"
+fi
+
+echo "[pre-commit] Running gitleaks protect on staged changes..."
+gitleaks protect --staged --redact --config "$TOP/.gitleaks.toml"
+

@@ -10,6 +10,7 @@ export default function HomePage() {
           <li><a href="/mandalas">/mandalas</a></li>
           <li><a href="/ativar">/ativar</a></li>
           <li><a href="/painel">/painel</a></li>
+          <li><a href="/boas-vindas">/boas-vindas</a></li>
           <li><a href="/sobre">/sobre</a></li>
         </ul>
       </nav>

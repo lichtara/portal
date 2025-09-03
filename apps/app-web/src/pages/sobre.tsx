@@ -1,3 +1,5 @@
+import { LicenseNotice } from "../components/LicenseNotice";
+
 export default function SobrePage() {
   return (
     <main>
@@ -33,7 +35,11 @@ export default function SobrePage() {
           <li>Adaptação Dinâmica</li>
         </ul>
       </section>
+
+      <section>
+        <h2>Licenças</h2>
+        <LicenseNotice />
+      </section>
     </main>
   );
 }
-

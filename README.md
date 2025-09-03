@@ -66,6 +66,22 @@ npm run lint         # placeholder
 npm run test         # placeholder
 ```
 
+## Segurança
+- Varredura de segredos no CI: `.github/workflows/secret-scan.yml` (Gitleaks)
+- Rodar local: `scripts/scan-secrets.sh`
+- Hook local: `git config core.hooksPath .githooks` (pre-commit com Gitleaks)
+- `.gitignore` reforçado para `.env` e variantes; mantenha apenas `.env.example` versionado
+ - Guia completo: `SECURITY.md`
+
+## Comunidade e Contribuição
+- Onboarding e padrões: `CONTRIBUTING.md`
+- Canais: `COMUNIDADE.md`
+- Acesso e times: `docs/ACCESS.md`
+
+## Operação
+- Observabilidade (SYNTARIS): `docs/OBSERVABILIDADE.md`
+- Backup e recuperação: `infra/backup/README.md`
+
 ## Integração com `/core`
 Durante o build, podemos puxar `core/docs/mandala-*.md` para `apps/app-web/content/core/`.
 Exemplo de passo (ajuste `<org>`):
