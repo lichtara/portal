@@ -3,6 +3,11 @@ on: [push, pull_request]
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      SENTRY_ORG: lichtara
+      SENTRY_PROJECT: app-web
+      SENTRY_AUTH_TOKEN: ${{ secrets.SENTRY_AUTH_TOKEN }}
+      SENTRY_RELEASE: ${{ github.sha }}
     steps:
       - uses: actions/checkout@v4
       - name: Node
