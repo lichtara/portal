@@ -16,5 +16,8 @@
     "format": "npm run format -w apps/app-web",
     "format:check": "npm run format:check -w apps/app-web",
     "test": "echo test placeholder"
+  },
+  "dependencies": {
+    "@sentry/browser": "^10.9.0"
   }
 }
