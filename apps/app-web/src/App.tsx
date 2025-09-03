@@ -1,4 +1,5 @@
 import { Routes, Route, Link } from 'react-router-dom'
+
 import HomePage from './pages/index'
 import MandalasPage from './pages/mandalas'
 import AtivarPage from './pages/ativar'
@@ -35,4 +36,3 @@ function NotFound() {
     </main>
   )
 }
-

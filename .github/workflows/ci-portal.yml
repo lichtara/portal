@@ -7,15 +7,19 @@ jobs:
       - uses: actions/checkout@v4
       - name: Node
         uses: actions/setup-node@v4
-        with: { node-version: '20' }
+        with:
+          node-version: '20'
+          cache: npm
       - name: Install deps (app-web)
-        run: npm ci --workspace apps/app-web || true
+        run: npm ci -w apps/app-web
       - name: Copy portal docs into app content
         run: |
           mkdir -p apps/app-web/content/core
           rsync -a --include 'mandala-*.md' --exclude '*' docs/ apps/app-web/content/core/ || true
+      - name: Lint (app-web)
+        run: npm run lint -w apps/app-web
       - name: Build (app-web)
-        run: npm run build --workspace apps/app-web || true
+        run: npm run build -w apps/app-web
       - name: Audit dependencies (npm audit)
         run: npm audit --workspace apps/app-web || true
       - name: License report

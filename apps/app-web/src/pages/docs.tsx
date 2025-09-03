@@ -8,10 +8,14 @@ export default function DocsPage() {
 
   const globMap = useMemo(() => {
     try {
-      const mods: Record<string, any> = (import.meta as any).glob?.("../../content/core/*.md", { as: "raw" }) || {};
-      return mods;
+      type GlobMap = Record<string, (() => Promise<string>) | string>;
+      const viteLike = import.meta as unknown as {
+        glob?: (pattern: string, opts?: Record<string, unknown>) => GlobMap;
+      };
+      const mods: GlobMap = viteLike.glob?.("../../content/core/*.md", { as: "raw" }) || {};
+      return mods as GlobMap;
     } catch {
-      return {} as Record<string, any>;
+      return {} as Record<string, never> as Record<string, (() => Promise<string>) | string>;
     }
   }, []);
 
@@ -24,9 +28,9 @@ export default function DocsPage() {
           const id = p.match(/([^/]+)\.md$/)?.[1] || p;
           let raw = "";
           try {
-            const mod = (globMap as any)[p];
+            const mod = (globMap as Record<string, (() => Promise<string>) | string>)[p];
             const content = typeof mod === "function" ? await mod() : mod;
-            raw = String((content as any)?.default ?? content);
+            raw = String(content);
           } catch {}
           const title = extractTitle(raw) || id;
           entries.push({ id, title });
@@ -83,4 +87,3 @@ function extractTitle(md: string): string | undefined {
   if (h1) return h1.replace(/^#\s+/, "").trim();
   return undefined;
 }
-

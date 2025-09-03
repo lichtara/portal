@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+
 import { MarkdownView } from "../components/MarkdownView";
 
 export default function MandalasPage() {
@@ -9,7 +10,11 @@ export default function MandalasPage() {
   // Try to discover available mandalas via import.meta.glob (Vite-like bundlers)
   const available = useMemo(() => {
     try {
-      const mods: Record<string, any> = (import.meta as any).glob?.("../../content/core/*.md", { as: "raw" }) || {};
+      type GlobMap = Record<string, (() => Promise<string>) | string>;
+      const viteLike = import.meta as unknown as {
+        glob?: (pattern: string, opts?: Record<string, unknown>) => GlobMap;
+      };
+      const mods: GlobMap = viteLike.glob?.("../../content/core/*.md", { as: "raw" }) || {};
       const ids = Object.keys(mods)
         .map((p) => p.match(/([^/]+)\.md$/)?.[1])
         .filter(Boolean) as string[];
@@ -42,12 +47,16 @@ export default function MandalasPage() {
 
     const tryImport = async () => {
       try {
-        const mods: Record<string, any> = (import.meta as any).glob?.("../../content/core/*.md", { as: "raw" }) || {};
+        type GlobMap = Record<string, (() => Promise<string>) | string>;
+        const viteLike = import.meta as unknown as {
+          glob?: (pattern: string, opts?: Record<string, unknown>) => GlobMap;
+        };
+        const mods: GlobMap = viteLike.glob?.("../../content/core/*.md", { as: "raw" }) || {};
         const key = Object.keys(mods).find((p) => p.endsWith(`/${got}.md`));
         if (key) {
           const mod = mods[key];
           const content = typeof mod === "function" ? await mod() : mod;
-          return String((content as any)?.default ?? content);
+          return String(content);
         }
         throw new Error("not-found");
       } catch (e) {
