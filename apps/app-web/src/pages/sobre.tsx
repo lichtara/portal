@@ -1,8 +1,9 @@
 import { LicenseNotice } from "../components/LicenseNotice";
+import "../styles/markdown.css";
 
 export default function SobrePage() {
   return (
-    <main>
+    <main className="markdown-body">
       <h1>Sobre o Portal Lichtara</h1>
       <p>
         Este app faz parte da Constelação Viva (SYNTRIA – UI/experiência) e convive com serviços agentes

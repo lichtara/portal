@@ -9,6 +9,7 @@
   margin: 1.2em 0 0.6em;
   line-height: 1.25;
   color: #3a2a6a;
+  scroll-margin-top: 72px; /* reserva para headers fixos no futuro */
 }
 .markdown-body p { margin: 0.6em 0; }
 .markdown-body ul, .markdown-body ol { margin: 0.6em 1.2em; }

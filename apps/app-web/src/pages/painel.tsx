@@ -1,6 +1,8 @@
+import "../styles/markdown.css";
+
 export default function PainelPage() {
   return (
-    <main>
+    <main className="markdown-body">
       <h1>Painel</h1>
       <ul>
         <li>Insights — LUMORA</li>
@@ -10,4 +12,3 @@ export default function PainelPage() {
     </main>
   );
 }
-

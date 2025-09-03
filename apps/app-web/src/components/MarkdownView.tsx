@@ -86,8 +86,8 @@ export function MarkdownView({ markdown }: Props) {
   return (
     <div className="markdown-container">
       {toc.length > 0 && (
-        <nav className="markdown-toc" aria-label="Sumário" onClick={onTocClick}>
-          <strong>Sumário</strong>
+        <nav className="markdown-toc" aria-label="Mapa da Leitura" onClick={onTocClick}>
+          <strong>Mapa da Leitura</strong>
           <ul>
             {toc
               .filter((h) => h.depth <= 4)
