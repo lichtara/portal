@@ -1,4 +1,6 @@
 # Portal Lichtara — Plataforma Viva
+[![CI Portal](https://github.com/lichtara/portal/actions/workflows/ci-portal.yml/badge.svg)](https://github.com/lichtara/portal/actions/workflows/ci-portal.yml)
+[![Secret Scan](https://github.com/lichtara/portal/actions/workflows/secret-scan.yml/badge.svg)](https://github.com/lichtara/portal/actions/workflows/secret-scan.yml)
 Aplicações, serviços e agents operacionais da Constelação.
 
 ## Visão
@@ -87,12 +89,17 @@ Durante o build, podemos puxar `core/docs/mandala-*.md` para `apps/app-web/conte
 Exemplo de passo (ajuste `<org>`):
 
 ```
-- name: Pull core docs
+- name: Pull core docs (optional)
+  env:
+    CORE_REPO: ${{ vars.CORE_REPO }} # fallback para https://github.com/lichtara/core no workflow
   run: |
-    git clone --depth=1 https://github.com/<org>/core tmp-core
+    CORE_REPO="${CORE_REPO:-https://github.com/lichtara/core}"
+    git clone --depth=1 "$CORE_REPO" tmp-core || exit 0
     mkdir -p apps/app-web/content/core
     rsync -a tmp-core/docs/ apps/app-web/content/core/
 ```
+
+No app, visualize via `/mandalas?id=mandala-agents`.
 
 ## Sobre
 Referencie as licenças no repositório `license` e apresente na tela "Sobre" da UI.
