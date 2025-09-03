@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: syntaris-harmony
+  labels:
+    app.kubernetes.io/name: syntaris-harmony
+    app.kubernetes.io/part-of: lichtara
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: syntaris-harmony
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: syntaris-harmony
+        app.kubernetes.io/part-of: lichtara
+    spec:
+      containers:
+        - name: syntaris-harmony
+          # Substitua pela imagem publicada deste serviço
+          image: ghcr.io/lichtara/syntaris-harmony:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - name: http
+              containerPort: 3000
+          env:
+            - name: SERVICE_NAME
+              value: syntaris-harmony
+            - name: APP_VERSION
+              value: "0.1.0"
+            - name: NODE_ENV
+              value: production
+            - name: LOG_LEVEL
+              value: info
+            - name: PORT
+              value: "3000"
+            # OpenTelemetry (opcional, habilite Collector e imagem com Node SDK)
+            - name: OTEL_SERVICE_NAME
+              value: syntaris-harmony
+            - name: OTEL_RESOURCE_ATTRIBUTES
+              value: deployment.environment=prod
+            - name: OTEL_EXPORTER_OTLP_ENDPOINT
+              value: http://otel-collector:4318
+          readinessProbe:
+            httpGet:
+              path: /readyz
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: http
+            initialDelaySeconds: 10
+            periodSeconds: 10
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              cpu: 250m
+              memory: 256Mi
+
