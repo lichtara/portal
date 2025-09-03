@@ -15,8 +15,15 @@ jobs:
         with:
           node-version: '20'
           cache: npm
+      - name: Clean legacy npm proxy configs
+        run: |
+          npm config delete http-proxy || true
+          npm config delete proxy || true
+          npm config delete https-proxy || true
       - name: Install deps (app-web)
         run: npm ci -w apps/app-web
+      - name: Install deps (syntaris-harmony)
+        run: npm ci -w services/syntaris-harmony
       - name: Copy portal docs into app content
         run: |
           mkdir -p apps/app-web/content/core
