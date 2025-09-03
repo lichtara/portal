@@ -1,0 +1,11 @@
+# Default owners (adjust to your GitHub org/team)
+* @lichtara/maintainers
+
+# UI app
+/apps/app-web/* @lichtara/ui
+
+# Services (assign per service as teams emerge)
+/services/* @lichtara/services
+
+# Docs
+/docs/* @lichtara/docs
