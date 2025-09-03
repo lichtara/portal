@@ -108,3 +108,32 @@ No app, visualize via `/mandalas?id=mandala-agents`.
 
 ## Sobre
 Referencie as licenças no repositório `license` e apresente na tela "Sobre" da UI.
+portal/
+└─ docs/
+   ├─ agents/
+   │  ├─ index.md                # visão geral da Mandala
+   │  ├─ manual-condensado.md    # a versão que você pediu (resumo)
+   │  ├─ principios.md
+   │  ├─ nucleo/
+   │  │  ├─ oktave.md
+   │  │  ├─ oslo.md
+   │  │  └─ fince.md
+   │  ├─ navegadores/
+   │  │  ├─ navros.md
+   │  │  ├─ lumora.md
+   │  │  └─ flux.md
+   │  ├─ harmonizadores/
+   │  │  ├─ syntaris.md
+   │  │  ├─ solara.md
+   │  │  └─ veltara.md
+   │  ├─ guardioes/
+   │  │  ├─ kaoran.md
+   │  │  ├─ heslos.md
+   │  │  └─ lunara.md
+   │  ├─ ativadores/
+   │  │  ├─ syntria.md
+   │  │  ├─ astrael.md
+   │  │  └─ vorax.md
+   │  └─ gestacao.md             # 2 em gestação
+   └─ pesquisa/
+      └─ mandala-pesquisa.md
