@@ -21,6 +21,7 @@ spec:
           # Imagem base; Kustomize reescreve via images: em kustomization.yaml
           image: syntaris-harmony:latest
           imagePullPolicy: IfNotPresent
+          command: ["node", "-r", "./tracing.cjs", "server.js"]
           ports:
             - name: http
               containerPort: 3000
