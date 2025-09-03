@@ -1,9 +1,15 @@
 {
-  "name": "portal",
+  "name": "lichtara-portal",
   "private": true,
   "workspaces": [
-    "apps/app-web"
+    "apps/*",
+    "services/*"
   ],
+  "engines": {
+    "node": ">=18.18 <=22",
+    "npm": ">=9"
+  },
+  "packageManager": "npm@10",
   "scripts": {
     "build": "npm run build -w apps/app-web",
     "lint": "npm run lint -w apps/app-web",
