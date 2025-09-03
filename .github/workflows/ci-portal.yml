@@ -10,6 +10,10 @@ jobs:
         with: { node-version: '20' }
       - name: Install deps (app-web)
         run: npm ci --workspace apps/app-web || true
+      - name: Copy portal docs into app content
+        run: |
+          mkdir -p apps/app-web/content/core
+          rsync -a --include 'mandala-*.md' --exclude '*' docs/ apps/app-web/content/core/ || true
       - name: Build (app-web)
         run: npm run build --workspace apps/app-web || true
       - name: Audit dependencies (npm audit)

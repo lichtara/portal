@@ -14,9 +14,19 @@ export default function MandalasPage() {
         .map((p) => p.match(/([^/]+)\.md$/)?.[1])
         .filter(Boolean) as string[];
       // Fallback to known examples if none found
-      return ids.length ? ids : ["mandala-agents", "mandala-petalas"];
+      return ids.length ? ids : [
+        "mandala-agents",
+        "mandala-agents-condensado",
+        "mandala-petalas",
+        "mandala-pesquisa"
+      ];
     } catch {
-      return ["mandala-agents", "mandala-petalas"];
+      return [
+        "mandala-agents",
+        "mandala-agents-condensado",
+        "mandala-petalas",
+        "mandala-pesquisa"
+      ];
     }
   }, []);
 
