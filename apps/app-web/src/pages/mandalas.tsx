@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { MarkdownView } from "../components/MarkdownView";
 
 export default function MandalasPage() {
@@ -6,22 +6,68 @@ export default function MandalasPage() {
   const [id, setId] = useState<string>("");
   const [error, setError] = useState<string>("");
 
+  // Try to discover available mandalas via import.meta.glob (Vite-like bundlers)
+  const available = useMemo(() => {
+    try {
+      const mods: Record<string, any> = (import.meta as any).glob?.("../../content/core/*.md", { as: "raw" }) || {};
+      const ids = Object.keys(mods)
+        .map((p) => p.match(/([^/]+)\.md$/)?.[1])
+        .filter(Boolean) as string[];
+      // Fallback to known examples if none found
+      return ids.length ? ids : ["mandala-agents", "mandala-petalas"];
+    } catch {
+      return ["mandala-agents", "mandala-petalas"];
+    }
+  }, []);
+
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const got = params.get("id") || "";
     setId(got);
     if (!got) return;
-    fetch(`/content/core/${got}.md`)
-      .then((r) => (r.ok ? r.text() : Promise.reject(r.statusText)))
+
+    const tryFetch = () =>
+      fetch(`/content/core/${got}.md`)
+        .then((r) => (r.ok ? r.text() : Promise.reject(r.statusText)));
+
+    const tryImport = async () => {
+      try {
+        const mods: Record<string, any> = (import.meta as any).glob?.("../../content/core/*.md", { as: "raw" }) || {};
+        const key = Object.keys(mods).find((p) => p.endsWith(`/${got}.md`));
+        if (key) {
+          const mod = mods[key];
+          const content = typeof mod === "function" ? await mod() : mod;
+          return String((content as any)?.default ?? content);
+        }
+        throw new Error("not-found");
+      } catch (e) {
+        throw e;
+      }
+    };
+
+    tryFetch()
       .then(setMd)
-      .catch((e) => setError(String(e)));
+      .catch(() => tryImport().then(setMd).catch((e) => setError(String(e))));
   }, []);
 
   return (
     <main>
       <h1>Mandalas</h1>
       {!id && (
-        <p>Informe um id via query: <code>?id=mandala-agents</code>. Arquivos são buscados em <code>content/core/</code>.</p>
+        <>
+          <p>
+            Informe um id via query, por exemplo: <code>?id=mandala-agents</code>. Arquivos são buscados em
+            <code> content/core/</code>.
+          </p>
+          <h2>Disponíveis</h2>
+          <ul>
+            {available.map((k) => (
+              <li key={k}>
+                <a href={`/mandalas?id=${k}`}>{k}</a>
+              </li>
+            ))}
+          </ul>
+        </>
       )}
       {error && <p>Erro ao carregar: {error}</p>}
       {md ? <MarkdownView markdown={md} /> : null}

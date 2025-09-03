@@ -2,22 +2,58 @@ import { useEffect, useState } from "react";
 import { unified } from "unified";
 import remarkParse from "remark-parse";
 import remarkRehype from "remark-rehype";
-import rehypeSanitize from "rehype-sanitize";
+import remarkSlug from "remark-slug";
+import rehypeSanitize, { defaultSchema } from "rehype-sanitize";
 import rehypeStringify from "rehype-stringify";
+import { toString } from "mdast-util-to-string";
+import Slugger from "github-slugger";
+import "../styles/markdown.css";
 
 type Props = { markdown: string };
 
 export function MarkdownView({ markdown }: Props) {
   const [html, setHtml] = useState<string>("");
+  const [toc, setToc] = useState<Array<{ depth: number; text: string; slug: string }>>([]);
 
   useEffect(() => {
     let cancelled = false;
     async function run() {
       try {
+        // Build TOC from headings using the same slug algorithm (GitHub-style)
+        const tree = unified().use(remarkParse).parse(markdown) as any;
+        const slugger = new Slugger();
+        const headings: Array<{ depth: number; text: string; slug: string }> = [];
+        function walk(node: any) {
+          if (!node || typeof node !== "object") return;
+          if (node.type === "heading" && node.depth >= 1 && node.depth <= 6) {
+            const text = toString(node) || "";
+            const slug = slugger.slug(text);
+            headings.push({ depth: node.depth, text, slug });
+          }
+          const children = (node.children || []) as any[];
+          for (const c of children) walk(c);
+        }
+        walk(tree);
+        if (!cancelled) setToc(headings);
+
+        // Extend sanitizer to allow id on headings and safe link attrs
+        const schema: any = JSON.parse(JSON.stringify(defaultSchema));
+        for (const tag of ["h1","h2","h3","h4","h5","h6"]) {
+          schema.attributes[tag] = [...(schema.attributes[tag] || []), "id"];
+        }
+        schema.attributes["a"] = [
+          ...(schema.attributes["a"] || []),
+          "href",
+          "name",
+          "target",
+          "rel"
+        ];
+
         const file = await unified()
           .use(remarkParse)
+          .use(remarkSlug)
           .use(remarkRehype)
-          .use(rehypeSanitize)
+          .use(rehypeSanitize, schema)
           .use(rehypeStringify)
           .process(markdown);
         if (!cancelled) setHtml(String(file));
@@ -31,7 +67,25 @@ export function MarkdownView({ markdown }: Props) {
     };
   }, [markdown]);
 
-  return <div dangerouslySetInnerHTML={{ __html: html }} />;
+  return (
+    <div className="markdown-container">
+      {toc.length > 0 && (
+        <nav className="markdown-toc" aria-label="Sumário">
+          <strong>Sumário</strong>
+          <ul>
+            {toc
+              .filter((h) => h.depth <= 3)
+              .map((h, i) => (
+                <li key={i} style={{ marginLeft: (h.depth - 1) * 12 }}>
+                  <a href={`#${h.slug}`}>{h.text}</a>
+                </li>
+              ))}
+          </ul>
+        </nav>
+      )}
+      <div className="markdown-body" dangerouslySetInnerHTML={{ __html: html }} />
+    </div>
+  );
 }
 
 function escapeHtml(s: string) {
