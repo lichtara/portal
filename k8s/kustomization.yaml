@@ -4,3 +4,4 @@ resources:
   - services/syntaris-harmony
   - overlays/observability
   - observability/alloy
+  - observability/alloy-logs

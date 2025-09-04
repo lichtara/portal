@@ -1,0 +1,51 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: alloy-logs-config
+  labels:
+    app.kubernetes.io/name: alloy-logs
+    app.kubernetes.io/part-of: lichtara
+data:
+  config.river: |
+    // ===== Kubernetes Pod Logs → Grafana Cloud Loki =====
+    loki.source.kubernetes "pods" {
+      forward_to = [loki.process.pino.receiver]
+      // optional namespace allowlist, e.g.: namespaces = ["default"]
+    }
+
+    loki.process "pino" {
+      // Parse Pino JSON structure (level, msg, service, env, version)
+      stage.json {
+        expressions = {
+          level   = "level",
+          msg     = "msg",
+          service = "service",
+          env     = "env",
+          version = "version"
+        }
+      }
+      // Promote useful fields to labels (if present)
+      stage.labels {
+        values = {
+          service = "{{ .service }}",
+          env     = "{{ .env }}",
+          version = "{{ .version }}"
+        }
+      }
+      // Optional: map numeric pino level to text
+      stage.replace {
+        expression = "(?P<num>^[0-9]{1,3}$)"
+        replace    = "level={{ .Value }}"
+      }
+      forward_to = [loki.write.grafana.receiver]
+    }
+
+    loki.write "grafana" {
+      endpoint { url = env("GRAFANA_CLOUD_LOKI_URL") }
+      basic_auth {
+        username = env("GRAFANA_CLOUD_LOKI_USER")
+        password = env("GRAFANA_CLOUD_LOKI_PASS")
+      }
+      external_labels = { cluster = env("CLUSTER_NAME") }
+    }
+

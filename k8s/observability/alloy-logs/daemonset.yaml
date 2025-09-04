@@ -1,0 +1,60 @@
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: alloy-logs
+  labels:
+    app.kubernetes.io/name: alloy-logs
+    app.kubernetes.io/part-of: lichtara
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: alloy-logs
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: alloy-logs
+        app.kubernetes.io/part-of: lichtara
+    spec:
+      serviceAccountName: alloy-logs
+      tolerations:
+        - operator: Exists
+      containers:
+        - name: alloy
+          image: ghcr.io/grafana/alloy:latest
+          imagePullPolicy: IfNotPresent
+          args: ["run", "/etc/alloy/config.river"]
+          securityContext:
+            runAsUser: 0
+          env:
+            - name: CLUSTER_NAME
+              value: "lichtara-cluster"
+          envFrom:
+            - secretRef:
+                name: grafana-cloud
+                optional: true
+          volumeMounts:
+            - name: config
+              mountPath: /etc/alloy
+            - name: varlog
+              mountPath: /var/log
+              readOnly: true
+            - name: docker
+              mountPath: /var/lib/docker/containers
+              readOnly: true
+            - name: pods
+              mountPath: /var/log/pods
+              readOnly: true
+      volumes:
+        - name: config
+          configMap:
+            name: alloy-logs-config
+        - name: varlog
+          hostPath:
+            path: /var/log
+        - name: docker
+          hostPath:
+            path: /var/lib/docker/containers
+        - name: pods
+          hostPath:
+            path: /var/log/pods
+

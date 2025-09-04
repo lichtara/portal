@@ -5,34 +5,33 @@
     {
       "type": "timeseries",
       "title": "Taxa de requisições (req/s)",
-      "targets": [{ "expr": "sum(rate(http_requests_total[5m])) by (service)" }]
+      "targets": [{ "expr": "sum(rate(http_requests_total[5m])) by (cluster, namespace, service)" }]
     },
     {
       "type": "timeseries",
       "title": "Erro 5xx (%)",
       "targets": [{
-        "expr": "sum(rate(http_requests_total{status=~\"5..\"}[5m])) by (service) / sum(rate(http_requests_total[5m])) by (service) * 100"
+        "expr": "sum(rate(http_requests_total{status=~\"5..\"}[5m])) by (cluster, namespace, service) / sum(rate(http_requests_total[5m])) by (cluster, namespace, service) * 100"
       }]
     },
     {
       "type": "timeseries",
       "title": "Latência P95 (s)",
       "targets": [{
-        "expr": "histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket[5m])) by (le,service))"
+        "expr": "histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket[5m])) by (le, cluster, namespace, service))"
       }]
     },
     {
       "type": "stat",
       "title": "Requisições em voo",
-      "targets": [{ "expr": "sum(http_inflight_requests) by (service)" }]
+      "targets": [{ "expr": "sum(http_inflight_requests) by (cluster, namespace, service)" }]
     },
     {
       "type": "stat",
       "title": "Heartbeat LUNARA (Δ/5m)",
-      "targets": [{ "expr": "sum(increase(lunara_heartbeat_total[5m])) by (service)" }]
+      "targets": [{ "expr": "sum(increase(lunara_heartbeat_total[5m])) by (cluster, namespace, service)" }]
     }
   ],
   "schemaVersion": 38,
   "version": 1
 }
-
