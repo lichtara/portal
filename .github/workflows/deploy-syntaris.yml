@@ -15,6 +15,10 @@ on:
         description: "Kustomize path (k8s or k8s/overlays/prod)"
         required: false
         default: "k8s"
+      clusterName:
+        description: "Cluster label for metrics/logs/traces (CLUSTER_NAME)"
+        required: false
+        default: "lichtara-cluster"
 
 jobs:
   deploy:
@@ -27,6 +31,7 @@ jobs:
       IMAGE_TAG: ${{ github.event.inputs.imageTag || 'latest' }}
       KUSTOMIZE_PATH: ${{ github.event.inputs.overlay || 'k8s' }}
       KUBE_CONFIG: ${{ secrets.KUBE_CONFIG }}
+      CLUSTER_NAME: ${{ github.event.inputs.clusterName || 'lichtara-cluster' }}
       OTLP_ENDPOINT: ${{ secrets.GRAFANA_CLOUD_OTLP_ENDPOINT }}
       GRAFANA_CLOUD_API_TOKEN: ${{ secrets.GRAFANA_CLOUD_API_TOKEN }}
       PROMETHEUS_METRICS: ${{ vars.PROMETHEUS_METRICS || vars.prometheus_metrics }}
@@ -90,3 +95,6 @@ jobs:
             echo "PROMETHEUS_METRICS not set (vars). Skipping grafana-cloud secret."
           fi
           kubectl -n "$NAMESPACE" apply -k "$KUSTOMIZE_PATH"
+          # Patch CLUSTER_NAME on collector + logs
+          kubectl -n "$NAMESPACE" set env deploy/otel-collector CLUSTER_NAME="$CLUSTER_NAME" || true
+          kubectl -n "$NAMESPACE" set env ds/alloy-logs CLUSTER_NAME="$CLUSTER_NAME" || true
