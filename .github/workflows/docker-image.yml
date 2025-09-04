@@ -1,0 +1,100 @@
+name: Deploy syntaris-harmony
+
+on:
+  workflow_dispatch:
+    inputs:
+      namespace:
+        description: "Kubernetes namespace"
+        required: false
+        default: "default"
+      imageTag:
+        description: "Image tag (default: latest)"
+        required: false
+        default: "latest"
+      overlay:
+        description: "Kustomize path (k8s or k8s/overlays/prod)"
+        required: false
+        default: "k8s"
+      clusterName:
+        description: "Cluster label for metrics/logs/traces (CLUSTER_NAME)"
+        required: false
+        default: "lichtara-cluster"
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    env:
+      NAMESPACE: ${{ github.event.inputs.namespace || 'default' }}
+      IMAGE_NAME: ghcr.io/${{ github.repository_owner }}/syntaris-harmony
+      IMAGE_TAG: ${{ github.event.inputs.imageTag || 'latest' }}
+      KUSTOMIZE_PATH: ${{ github.event.inputs.overlay || 'k8s' }}
+      KUBE_CONFIG: ${{ secrets.KUBE_CONFIG }}
+      CLUSTER_NAME: ${{ github.event.inputs.clusterName || 'lichtara-cluster' }}
+      OTLP_ENDPOINT: ${{ secrets.GRAFANA_CLOUD_OTLP_ENDPOINT }}
+      GRAFANA_CLOUD_API_TOKEN: ${{ secrets.GRAFANA_CLOUD_API_TOKEN }}
+      PROMETHEUS_METRICS: ${{ vars.PROMETHEUS_METRICS || vars.prometheus_metrics }}
+      GRAFANA_CLOUD_PROM_URL: ${{ secrets.GRAFANA_CLOUD_PROM_URL }}
+      GRAFANA_CLOUD_PROM_USER: ${{ secrets.GRAFANA_CLOUD_PROM_USER }}
+      GRAFANA_CLOUD_PROM_PASS: ${{ secrets.GRAFANA_CLOUD_PROM_PASS }}
+      GRAFANA_CLOUD_LOKI_URL: ${{ secrets.GRAFANA_CLOUD_LOKI_URL }}
+      GRAFANA_CLOUD_LOKI_USER: ${{ secrets.GRAFANA_CLOUD_LOKI_USER }}
+      GRAFANA_CLOUD_LOKI_PASS: ${{ secrets.GRAFANA_CLOUD_LOKI_PASS }}
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Prepare kubeconfig
+        run: |
+          set -euo pipefail
+          mkdir -p ~/.kube
+          if [ -z "${KUBE_CONFIG}" ]; then
+            echo "KUBE_CONFIG secret is not set" >&2; exit 1;
+          fi
+          # Accept either base64 (most common) or plain kubeconfig JSON/YAML
+          if echo "$KUBE_CONFIG" | head -c1 | grep -q '{'; then
+            printf "%s" "$KUBE_CONFIG" > ~/.kube/config
+          else
+            printf "%s" "$KUBE_CONFIG" | base64 -d > ~/.kube/config || printf "%s" "$KUBE_CONFIG" > ~/.kube/config
+          fi
+          chmod 600 ~/.kube/config
+
+      - name: Set image override in kustomization
+        run: |
+          set -euo pipefail
+          IMAGE_REF="${IMAGE_NAME}:${IMAGE_TAG}"
+          sed -i "s#newName: ghcr.io/.*/syntaris-harmony#newName: ${IMAGE_NAME}#" k8s/services/syntaris-harmony/kustomization.yaml
+          sed -i "s#newTag: .*#newTag: ${IMAGE_TAG}#" k8s/services/syntaris-harmony/kustomization.yaml
+          echo "Using image ${IMAGE_REF} in kustomization"
+
+      - name: Create/Update OTEL secret (Grafana Cloud)
+        run: |
+          set -euo pipefail
+          if [ -z "${OTLP_ENDPOINT:-}" ] || [ -z "${GRAFANA_CLOUD_API_TOKEN:-}" ]; then
+            echo "Skipping OTEL secret: missing OTLP endpoint or API token (set GRAFANA_CLOUD_OTLP_ENDPOINT and GRAFANA_CLOUD_API_TOKEN secrets)"
+          else
+            kubectl -n "$NAMESPACE" create secret generic otel-auth \
+              --from-literal=OTEL_EXPORTER_OTLP_ENDPOINT="${OTLP_ENDPOINT}" \
+              --from-literal=OTEL_EXPORTER_OTLP_HEADERS="Authorization=Bearer ${GRAFANA_CLOUD_API_TOKEN}" \
+              --dry-run=client -o yaml | kubectl -n "$NAMESPACE" apply -f -
+          fi
+
+      - name: Deploy with kustomize
+        run: |
+          if [ -n "$PROMETHEUS_METRICS" ]; then
+            echo "Configuring grafana-cloud secret (Prometheus/Loki)"
+            kubectl -n "$NAMESPACE" create secret generic grafana-cloud \
+              --from-literal=GRAFANA_CLOUD_PROM_URL="${GRAFANA_CLOUD_PROM_URL:-}" \
+              --from-literal=GRAFANA_CLOUD_PROM_USER="${GRAFANA_CLOUD_PROM_USER:-}" \
+              --from-literal=GRAFANA_CLOUD_PROM_PASS="${GRAFANA_CLOUD_PROM_PASS:-}" \
+              --from-literal=GRAFANA_CLOUD_LOKI_URL="${GRAFANA_CLOUD_LOKI_URL:-}" \
+              --from-literal=GRAFANA_CLOUD_LOKI_USER="${GRAFANA_CLOUD_LOKI_USER:-}" \
+              --from-literal=GRAFANA_CLOUD_LOKI_PASS="${GRAFANA_CLOUD_LOKI_PASS:-}" \
+              --dry-run=client -o yaml | kubectl -n "$NAMESPACE" apply -f -
+          else
+            echo "PROMETHEUS_METRICS not set (vars). Skipping grafana-cloud secret."
+          fi
+          kubectl -n "$NAMESPACE" apply -k "$KUSTOMIZE_PATH"
+          # Patch CLUSTER_NAME on collector + logs
+          kubectl -n "$NAMESPACE" set env deploy/otel-collector CLUSTER_NAME="$CLUSTER_NAME" || true
+          kubectl -n "$NAMESPACE" set env ds/alloy-logs CLUSTER_NAME="$CLUSTER_NAME" || true
