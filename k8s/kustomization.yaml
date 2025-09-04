@@ -3,4 +3,4 @@ kind: Kustomization
 resources:
   - services/syntaris-harmony
   - overlays/observability
-
+  - observability/alloy

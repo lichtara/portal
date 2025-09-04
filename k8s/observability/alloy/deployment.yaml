@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: otel-collector
+  labels:
+    app.kubernetes.io/name: alloy
+    app.kubernetes.io/part-of: lichtara
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: alloy
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: alloy
+        app.kubernetes.io/part-of: lichtara
+    spec:
+      containers:
+        - name: alloy
+          image: ghcr.io/grafana/alloy:latest
+          imagePullPolicy: IfNotPresent
+          args: ["run", "/etc/alloy/config.river"]
+          ports:
+            - name: otlp-http
+              containerPort: 4318
+            - name: otlp-grpc
+              containerPort: 4317
+          env:
+            - name: CLUSTER_NAME
+              value: "lichtara-cluster"
+          envFrom:
+            - secretRef:
+                name: grafana-cloud
+                optional: true
+          volumeMounts:
+            - name: config
+              mountPath: /etc/alloy
+      volumes:
+        - name: config
+          configMap:
+            name: alloy-config
+
