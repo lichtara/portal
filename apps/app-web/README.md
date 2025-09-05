@@ -15,6 +15,12 @@ Scripts ainda são placeholders. Integração com framework (Next/Vite) pode ser
 
 ## Estrutura de pastas
 - `src/pages/` — páginas (`/`, `/mandalas`, `/ativar`, `/painel`)
+
+### Integração com Syntaris — Protocolo
+
+- Página `/protocolo` envia requisições ao serviço `syntaris-harmony` para executar o pipeline de alinhamento de consciência.
+- Em desenvolvimento, as chamadas usam proxy Vite via path `/api/syntaris` para o alvo `http://localhost:3000` (config em `vite.config.ts`).
+- Em produção, defina `VITE_SYNTARIS_BASE_URL` apontando para a URL pública do serviço (ex.: `https://api.seudominio/syntaris`).
 - `src/modules/syntria/` — rituais/mandalas (ex.: `ActivateRitual.tsx`)
 - `src/components/` — componentes compartilhados
 - `src/styles/` — estilos
