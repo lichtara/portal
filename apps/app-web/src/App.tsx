@@ -7,6 +7,7 @@ import PainelPage from './pages/painel'
 import SobrePage from './pages/sobre'
 import BoasVindasPage from './pages/boas-vindas'
 import DocsPage from './pages/docs'
+import ProtocoloPage from './pages/protocolo'
 
 export function App() {
   return (
@@ -19,6 +20,7 @@ export function App() {
         <Route path="/sobre" element={<SobrePage />} />
         <Route path="/boas-vindas" element={<BoasVindasPage />} />
         <Route path="/docs" element={<DocsPage />} />
+        <Route path="/protocolo" element={<ProtocoloPage />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
     </>

@@ -17,6 +17,7 @@ export default function HomePage() {
           <li><a href="/painel">/painel</a></li>
           <li><a href="/boas-vindas">/boas-vindas</a></li>
           <li><a href="/sobre">/sobre</a></li>
+          <li><a href="/protocolo">/protocolo</a></li>
         </ul>
       </nav>
     </main>

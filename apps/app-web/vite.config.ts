@@ -20,6 +20,14 @@ export default defineConfig({
     sourcemap: true,
   },
   server: {
-    fs: { allow: ['..'] }
+    fs: { allow: ['..'] },
+    proxy: {
+      // Proxy para serviço syntaris-harmony durante desenvolvimento
+      '/api/syntaris': {
+        target: process.env.VITE_SYNTARIS_DEV_TARGET || 'http://localhost:3000',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api\/syntaris/, ''),
+      },
+    },
   }
 })
