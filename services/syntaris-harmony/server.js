@@ -193,7 +193,16 @@ function somaEnergia(itens) {
   return itens.reduce((s, x) => s + Math.max(0, (x.a ?? 1) ** 2), 0)
 }
 
+// CORS preflight para o endpoint do protocolo
+app.options('/protocolo/alinhar-consciencia', (req, res) => {
+  res.setHeader('Access-Control-Allow-Origin', '*')
+  res.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS')
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Traceparent, traceparent')
+  res.status(204).end()
+})
+
 app.post('/protocolo/alinhar-consciencia', (req, res) => {
+  res.setHeader('Access-Control-Allow-Origin', '*')
   try {
     const body = req.body || {}
     const dados = normalizaEntrada(body.dados_campo_informacional)
