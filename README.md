@@ -76,6 +76,16 @@ npm run lint         # placeholder
 npm run test         # placeholder
 ```
 
+## Início Rápido (dev)
+- Pré‑requisitos: Node `>=20 <21`, npm `>=10`.
+- Tudo junto (app + serviço) em dev:
+  - `npm run dev`
+  - Abre a UI em `http://localhost:5173` (Vite), com proxy para o serviço `syntaris-harmony` em `http://localhost:3000`.
+  - Página para validar a integração: `http://localhost:5173/protocolo`.
+- Separado (opcional):
+  - Serviço: `npm run dev -w services/syntaris-harmony`
+  - App web: `npm run dev -w apps/app-web`
+
 ## Segurança
 - Varredura de segredos no CI: `.github/workflows/secret-scan.yml` (Gitleaks)
 - Rodar local: `scripts/scan-secrets.sh`

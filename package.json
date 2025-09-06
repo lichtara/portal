@@ -17,7 +17,10 @@
     "lint": "npm run lint -w apps/app-web",
     "format": "npm run format -w apps/app-web",
     "format:check": "npm run format:check -w apps/app-web",
-    "test": "echo test placeholder"
+    "test": "echo test placeholder",
+    "dev": "bash scripts/dev.sh",
+    "dev:app": "npm run dev -w apps/app-web",
+    "dev:syntaris": "npm run dev -w services/syntaris-harmony"
   },
   "dependencies": {
     "@opentelemetry/exporter-logs-otlp-http": "^0.203.0",

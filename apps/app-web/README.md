@@ -11,7 +11,13 @@ Estrutura mínima para as primeiras páginas e módulos da UI.
 `src/modules/syntria/` — componentes e fluxos de rituais/mandalas.
 
 ## Desenvolvimento
-Scripts ainda são placeholders. Integração com framework (Next/Vite) pode ser adicionada depois.
+- Rodar somente a UI: `npm run dev -w apps/app-web`
+- Proxy para o serviço `syntaris-harmony` via Vite:
+  - Em dev, chamadas a `/api/syntaris` são redirecionadas para `http://localhost:3000` (config em `vite.config.ts`).
+  - Para apontar para outra URL em dev, defina `VITE_SYNTARIS_DEV_TARGET` ao iniciar o Vite.
+  - Em produção, defina `VITE_SYNTARIS_BASE_URL` no `.env`.
+  
+Para subir app + serviço juntos a partir da raiz do repositório: `npm run dev`.
 
 ## Estrutura de pastas
 - `src/pages/` — páginas (`/`, `/mandalas`, `/ativar`, `/painel`)
