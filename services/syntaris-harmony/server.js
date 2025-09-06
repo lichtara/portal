@@ -98,6 +98,10 @@ app.use((req, res, next) => {
 
 // Health endpoints
 app.get('/healthz', (_req, res) => res.status(200).send('ok'))
+// Aliases for common probes/scripts
+app.get('/health', (_req, res) => res.status(200).send('ok'))
+app.get('/version', (_req, res) => res.json({ service, env, version }))
+
 app.get('/readyz', async (_req, res) => {
   const depsOk = true // TODO: check db/cache/queues
   res.status(depsOk ? 200 : 503).send(depsOk ? 'ready' : 'not-ready')
