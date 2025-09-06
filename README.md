@@ -105,6 +105,13 @@ npm run test         # placeholder
   - Ajuste a imagem via Kustomize: `kustomize edit set image syntaris-harmony=ghcr.io/<org>/syntaris-harmony:sha-<commit>` em `k8s/services/syntaris-harmony`
   - (Opcional) Secret para OTel: `k8s/services/syntaris-harmony/otel-secret.example.yaml` (usa envFrom no Deployment)
 
+Endpoints (dev):
+- Health: `GET /healthz` (alias: `GET /health`)
+- Readiness: `GET /readyz`
+- Versão/info: `GET /` (alias: `GET /version`)
+- Métricas: `GET /metrics`
+- Protocolo: `POST /protocolo/alinhar-consciencia`
+
 ## Integração com `/core`
 Durante o build, podemos puxar `core/docs/mandala-*.md` para `apps/app-web/content/core/`.
 Exemplo de passo (ajuste `<org>`):
