@@ -21,7 +21,8 @@
   },
   "dependencies": {
     "@opentelemetry/exporter-logs-otlp-http": "^0.203.0",
-    "@sentry/browser": "^10.9.0"
+    "@sentry/browser": "^10.9.0",
+    "axios": "^1.11.0"
   },
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^7.18.0",
