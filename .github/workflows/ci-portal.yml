@@ -13,7 +13,7 @@ jobs:
       VITE_SENTRY_RELEASE: ${{ github.sha }}
       SENTRY_API_BASE: ${{ vars.SENTRY_API_BASE || 'https://de.sentry.io/api/0' }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Node
         uses: actions/setup-node@v4
         with:
