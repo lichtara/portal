@@ -76,6 +76,10 @@ npm run lint         # placeholder
 npm run test         # placeholder
 ```
 
+Node & npm
+- Versão de Node padronizada em `.nvmrc` (v20.19.4). Recomenda-se `nvm use`.
+- `package.json` define `engines` (node >=20 <21, npm >=10 <12).
+
 ## Segurança
 - Varredura de segredos no CI: `.github/workflows/secret-scan.yml` (Gitleaks)
 - Rodar local: `scripts/scan-secrets.sh`

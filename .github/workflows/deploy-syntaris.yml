@@ -7,6 +7,10 @@ on:
         description: "Kubernetes namespace"
         required: false
         default: "default"
+      environment:
+        description: "GitHub Environment (dev/staging/prod)"
+        required: false
+        default: "dev"
       imageTag:
         description: "Image tag (default: latest)"
         required: false
@@ -23,10 +27,12 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    environment: ${{ github.event.inputs.environment || 'dev' }}
     permissions:
       contents: read
     env:
       NAMESPACE: ${{ github.event.inputs.namespace || 'default' }}
+      ENVIRONMENT: ${{ github.event.inputs.environment || 'dev' }}
       IMAGE_NAME: ghcr.io/${{ github.repository_owner }}/syntaris-harmony
       IMAGE_TAG: ${{ github.event.inputs.imageTag || 'latest' }}
       KUSTOMIZE_PATH: ${{ github.event.inputs.overlay || 'k8s' }}

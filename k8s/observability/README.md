@@ -57,6 +57,30 @@ Workflow: `.github/workflows/deploy-syntaris.yml`
 - Logs (Loki)
   - Exemplos de labels: `cluster`, `namespace`, `pod`, `container`, `service`, `env`, `version`
   - Query: `{cluster="<CLUSTER_NAME>", service="syntaris-harmony"} |= "request"`
+
+## Envio via AWS PrivateLink (Prometheus)
+
+Se você configurou PrivateLink para Grafana Cloud Prometheus:
+
+1. Crie um VPC Endpoint (Interface) apontando para o Service Name informado pelo Grafana Cloud (ex.: `com.amazonaws.vpce.sa-east-1.vpce-svc-…`).
+2. Habilite Private DNS no endpoint. Dentro da VPC, o hostname privado (ex.: `mimir-prod-40-cortex-gw.sa-east-1.vpce.grafana.net`) resolverá para IPs privados da AWS.
+3. Ajuste o Remote Write do Alloy para usar a URL privada:
+   - `GRAFANA_CLOUD_PROM_URL=https://<PRIVATE_DNS>/api/prom/push`
+   - `GRAFANA_CLOUD_PROM_USER=<instance id>` (numérico, ex.: `2656969`)
+   - `GRAFANA_CLOUD_PROM_PASS=<token glc_…>` (Access Policy com escopo Metrics:Write)
+4. No workflow de deploy, defina esses valores como Secrets do ambiente (dev/staging/prod). O job já cria/atualiza o Secret `grafana-cloud` com esses campos.
+5. Segurança de rede:
+   - Tráfego permanece dentro da VPC (sem Internet pública) usando TLS 443 e SNI do hostname privado.
+   - Se precisar restringir egress IPs para o modo público (sem PrivateLink), obtenha os IPs com:
+     - `dig +short src-ips.prometheus-prod-40-prod-sa-east-1.grafana.net`
+     - Em PrivateLink, essa etapa não é necessária; restrinja saída apenas aos ENIs do endpoint.
+
+Valide com:
+
+```
+kubectl -n <ns> logs deploy/alloy -f | rg -n "remote_write" -n || true
+```
+
 - Traços (Tempo)
   - Busque pelo serviço `syntaris-harmony`
 
@@ -65,4 +89,3 @@ Workflow: `.github/workflows/deploy-syntaris.yml`
 - Endpoints de métricas devem responder em `/metrics` (prom-client já faz).
 - Logs do app em JSON Pino (campos `level,msg,service,env,version`).
 - `CLUSTER_NAME` é adicionado como label em métricas e logs (e disponível no collector para traços).
-
