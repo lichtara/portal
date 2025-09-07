@@ -40,6 +40,7 @@ jobs:
       CLUSTER_NAME: ${{ github.event.inputs.clusterName || 'lichtara-cluster' }}
       OTLP_ENDPOINT: ${{ secrets.GRAFANA_CLOUD_OTLP_ENDPOINT }}
       GRAFANA_CLOUD_API_TOKEN: ${{ secrets.GRAFANA_CLOUD_API_TOKEN }}
+      OTLP_PRIV_HTTP: ${{ secrets.OTLP_PRIV_HTTP }}
       TEMPO_OTLP_HTTP: ${{ secrets.TEMPO_OTLP_HTTP }}
       TEMPO_USER: ${{ secrets.TEMPO_USER }}
       TEMPO_TOKEN: ${{ secrets.TEMPO_TOKEN }}
@@ -79,11 +80,12 @@ jobs:
       - name: Create/Update OTEL secret (Grafana Cloud)
         run: |
           set -euo pipefail
-          if [ -z "${OTLP_ENDPOINT:-}" ] || [ -z "${GRAFANA_CLOUD_API_TOKEN:-}" ]; then
-            echo "Skipping OTEL secret: missing OTLP endpoint or API token (set GRAFANA_CLOUD_OTLP_ENDPOINT and GRAFANA_CLOUD_API_TOKEN secrets)"
+          ENDPOINT="${OTLP_PRIV_HTTP:-${OTLP_ENDPOINT:-}}"
+          if [ -z "${ENDPOINT}" ] || [ -z "${GRAFANA_CLOUD_API_TOKEN:-}" ]; then
+            echo "Skipping OTEL secret: missing OTLP endpoint or API token (set OTLP_PRIV_HTTP or GRAFANA_CLOUD_OTLP_ENDPOINT and GRAFANA_CLOUD_API_TOKEN secrets)"
           else
             kubectl -n "$NAMESPACE" create secret generic otel-auth \
-              --from-literal=OTEL_EXPORTER_OTLP_ENDPOINT="${OTLP_ENDPOINT}" \
+              --from-literal=OTEL_EXPORTER_OTLP_ENDPOINT="${ENDPOINT}" \
               --from-literal=OTEL_EXPORTER_OTLP_HEADERS="Authorization=Bearer ${GRAFANA_CLOUD_API_TOKEN}" \
               --dry-run=client -o yaml | kubectl -n "$NAMESPACE" apply -f -
           fi

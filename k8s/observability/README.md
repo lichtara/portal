@@ -107,6 +107,13 @@ kubectl -n <ns> logs deploy/otel-collector -f | rg -n "exporter.otlp" || true
 - Push: `https://loki-…vpce.grafana.net/loki/api/v1/push`
 - Auth: Basic (`Logs:Write`) — use os campos `GRAFANA_CLOUD_LOKI_*` no Secret `grafana-cloud`.
 
+## OTLP Gateway via PrivateLink (alternativa aos exports diretos)
+
+- Use o endpoint privado do OTLP Gateway (ex.: `https://prod-sa-east-1-otlp-gateway.sa-east-1.vpce.grafana.net/otlp`).
+- Autenticação: `Authorization: Bearer glc_…` (Access Policy com `Traces:Write`/`Metrics:Write` conforme o sinal).
+- No workflow de deploy (`deploy-syntaris.yml`), adicione o secret `OTLP_PRIV_HTTP` no Environment para criar o Secret `otel-auth` com esse endpoint.
+- Útil para serviços que exportam direto via OTEL SDK (sem passar pelo Alloy), usando as envs `OTEL_EXPORTER_OTLP_*` injetadas via `envFrom`.
+
 - Traços (Tempo)
   - Busque pelo serviço `syntaris-harmony`
 
