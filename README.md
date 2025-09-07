@@ -71,6 +71,7 @@ portal/
 Este repositório usa npm workspaces. No topo:
 
 ```
+npm run dev          # inicia app-web (Vite) + serviço syntaris-harmony juntos
 npm run bootstrap    # instala root + apps/app-web + services/syntaris-harmony
 npm run build        # constrói `apps/app-web`
 npm run lint         # placeholder
