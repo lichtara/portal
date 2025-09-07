@@ -23,9 +23,13 @@ data:
     }
 
     otelcol.exporter.otlp "tempo" {
+      // PrivateLink (Tempo) via OTLP/HTTP with Basic Auth
+      // Expect envs provided via Secret `grafana-cloud`:
+      // - GRAFANA_CLOUD_TEMPO_HTTP: e.g. https://tempo-...vpce.grafana.net/v1/traces
+      // - GRAFANA_CLOUD_TEMPO_B64: base64("<user>:<token>") with Traces:Write
       client {
-        endpoint = env("GRAFANA_CLOUD_OTLP_ENDPOINT")
-        headers  = { "Authorization" = concat("Bearer ", env("GRAFANA_CLOUD_API_TOKEN")) }
+        endpoint = env("GRAFANA_CLOUD_TEMPO_HTTP")
+        headers  = { "Authorization" = concat("Basic ", env("GRAFANA_CLOUD_TEMPO_B64")) }
       }
     }
 

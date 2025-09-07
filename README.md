@@ -1,6 +1,7 @@
 # Portal Lichtara — Plataforma Viva
 [![CI Portal](https://github.com/lichtara/portal/actions/workflows/ci-portal.yml/badge.svg)](https://github.com/lichtara/portal/actions/workflows/ci-portal.yml)
 [![Secret Scan](https://github.com/lichtara/portal/actions/workflows/secret-scan.yml/badge.svg)](https://github.com/lichtara/portal/actions/workflows/secret-scan.yml)
+[![Killercoda Lab](https://img.shields.io/badge/killercoda-run%20lab-2ea44f)](https://killercoda.com/lichtara)
 Aplicações, serviços e agents operacionais da Constelação.
 
 ## Visão
@@ -96,6 +97,7 @@ Node & npm
 - Observabilidade (SYNTARIS): `docs/observability-syntaris.md` (bundle mínimo)
 - Histórico: `docs/OBSERVABILIDADE.md`
 - Backup e recuperação: `infra/backup/README.md`
+ - Lab interativo (Killercoda): `docs/labs/killercoda.md` — execução rápida no navegador
 
 ### Serviço exemplo observável — syntaris-harmony
 - Local

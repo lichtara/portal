@@ -40,6 +40,9 @@ jobs:
       CLUSTER_NAME: ${{ github.event.inputs.clusterName || 'lichtara-cluster' }}
       OTLP_ENDPOINT: ${{ secrets.GRAFANA_CLOUD_OTLP_ENDPOINT }}
       GRAFANA_CLOUD_API_TOKEN: ${{ secrets.GRAFANA_CLOUD_API_TOKEN }}
+      TEMPO_OTLP_HTTP: ${{ secrets.TEMPO_OTLP_HTTP }}
+      TEMPO_USER: ${{ secrets.TEMPO_USER }}
+      TEMPO_TOKEN: ${{ secrets.TEMPO_TOKEN }}
       PROMETHEUS_METRICS: ${{ vars.PROMETHEUS_METRICS || vars.prometheus_metrics }}
       GRAFANA_CLOUD_PROM_URL: ${{ secrets.GRAFANA_CLOUD_PROM_URL }}
       GRAFANA_CLOUD_PROM_USER: ${{ secrets.GRAFANA_CLOUD_PROM_USER }}
@@ -85,21 +88,27 @@ jobs:
               --dry-run=client -o yaml | kubectl -n "$NAMESPACE" apply -f -
           fi
 
+      - name: Create/Update grafana-cloud secret (Tempo/Prom/Loki)
+        run: |
+          set -euo pipefail
+          # Build optional Tempo Basic auth (base64 user:token)
+          TEMPO_B64=""
+          if [ -n "${TEMPO_USER:-}" ] && [ -n "${TEMPO_TOKEN:-}" ]; then
+            TEMPO_B64=$(printf "%s" "${TEMPO_USER}:${TEMPO_TOKEN}" | base64)
+          fi
+          kubectl -n "$NAMESPACE" create secret generic grafana-cloud \
+            ${TEMPO_OTLP_HTTP:+--from-literal=GRAFANA_CLOUD_TEMPO_HTTP="${TEMPO_OTLP_HTTP}"} \
+            ${TEMPO_B64:+--from-literal=GRAFANA_CLOUD_TEMPO_B64="${TEMPO_B64}"} \
+            ${GRAFANA_CLOUD_PROM_URL:+--from-literal=GRAFANA_CLOUD_PROM_URL="${GRAFANA_CLOUD_PROM_URL}"} \
+            ${GRAFANA_CLOUD_PROM_USER:+--from-literal=GRAFANA_CLOUD_PROM_USER="${GRAFANA_CLOUD_PROM_USER}"} \
+            ${GRAFANA_CLOUD_PROM_PASS:+--from-literal=GRAFANA_CLOUD_PROM_PASS="${GRAFANA_CLOUD_PROM_PASS}"} \
+            ${GRAFANA_CLOUD_LOKI_URL:+--from-literal=GRAFANA_CLOUD_LOKI_URL="${GRAFANA_CLOUD_LOKI_URL}"} \
+            ${GRAFANA_CLOUD_LOKI_USER:+--from-literal=GRAFANA_CLOUD_LOKI_USER="${GRAFANA_CLOUD_LOKI_USER}"} \
+            ${GRAFANA_CLOUD_LOKI_PASS:+--from-literal=GRAFANA_CLOUD_LOKI_PASS="${GRAFANA_CLOUD_LOKI_PASS}"} \
+            --dry-run=client -o yaml | kubectl -n "$NAMESPACE" apply -f -
+
       - name: Deploy with kustomize
         run: |
-          if [ -n "$PROMETHEUS_METRICS" ]; then
-            echo "Configuring grafana-cloud secret (Prometheus/Loki)"
-            kubectl -n "$NAMESPACE" create secret generic grafana-cloud \
-              --from-literal=GRAFANA_CLOUD_PROM_URL="${GRAFANA_CLOUD_PROM_URL:-}" \
-              --from-literal=GRAFANA_CLOUD_PROM_USER="${GRAFANA_CLOUD_PROM_USER:-}" \
-              --from-literal=GRAFANA_CLOUD_PROM_PASS="${GRAFANA_CLOUD_PROM_PASS:-}" \
-              --from-literal=GRAFANA_CLOUD_LOKI_URL="${GRAFANA_CLOUD_LOKI_URL:-}" \
-              --from-literal=GRAFANA_CLOUD_LOKI_USER="${GRAFANA_CLOUD_LOKI_USER:-}" \
-              --from-literal=GRAFANA_CLOUD_LOKI_PASS="${GRAFANA_CLOUD_LOKI_PASS:-}" \
-              --dry-run=client -o yaml | kubectl -n "$NAMESPACE" apply -f -
-          else
-            echo "PROMETHEUS_METRICS not set (vars). Skipping grafana-cloud secret."
-          fi
           kubectl -n "$NAMESPACE" apply -k "$KUSTOMIZE_PATH"
           # Patch CLUSTER_NAME on collector + logs
           kubectl -n "$NAMESPACE" set env deploy/otel-collector CLUSTER_NAME="$CLUSTER_NAME" || true

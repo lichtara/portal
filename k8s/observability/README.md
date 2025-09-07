@@ -81,6 +81,32 @@ Valide com:
 kubectl -n <ns> logs deploy/alloy -f | rg -n "remote_write" -n || true
 ```
 
+## Traces via AWS PrivateLink (Tempo)
+
+1. Crie um VPC Interface Endpoint para o serviço Tempo do seu stack e habilite Private DNS (ex.: `tempo-prod-40-otlp-gw.sa-east-1.vpce.grafana.net`).
+2. Defina Environment Secrets no GitHub (por ambiente):
+   - `TEMPO_OTLP_HTTP` = `https://tempo-…vpce.grafana.net/v1/traces`
+   - `TEMPO_USER` = `<stack user numérico>` (ex.: `2656969`)
+   - `TEMPO_TOKEN` = `glc_…` (Access Policy com `Traces:Write`)
+3. O workflow de deploy cria/atualiza o Secret `grafana-cloud` com:
+   - `GRAFANA_CLOUD_TEMPO_HTTP` (endpoint HTTP privado)
+   - `GRAFANA_CLOUD_TEMPO_B64` (base64 de `user:token`)
+4. O Alloy exporta via OTLP/HTTP usando Basic Auth (ver `alloy/configmap.yaml`).
+5. Segurança: SG permitindo porta 443 dos nodes/pods ao ENI do VPC Endpoint.
+
+Validação:
+
+```
+nslookup tempo-…vpce.grafana.net
+kubectl -n <ns> logs deploy/otel-collector -f | rg -n "exporter.otlp" || true
+```
+
+## Logs via AWS PrivateLink (Loki) — opcional
+
+- Private DNS (ex.): `loki-prod-40-push-gw.sa-east-1.vpce.grafana.net`
+- Push: `https://loki-…vpce.grafana.net/loki/api/v1/push`
+- Auth: Basic (`Logs:Write`) — use os campos `GRAFANA_CLOUD_LOKI_*` no Secret `grafana-cloud`.
+
 - Traços (Tempo)
   - Busque pelo serviço `syntaris-harmony`
 
