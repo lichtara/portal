@@ -52,7 +52,7 @@ jobs:
       GRAFANA_CLOUD_LOKI_USER: ${{ secrets.GRAFANA_CLOUD_LOKI_USER }}
       GRAFANA_CLOUD_LOKI_PASS: ${{ secrets.GRAFANA_CLOUD_LOKI_PASS }}
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
 
       - name: Prepare kubeconfig
         run: |
