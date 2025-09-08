@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+# Ensures commits are signed off per DCO (adds if missing)
+
+set -euo pipefail
+MSG_FILE="$1"
+
+if grep -qiE '^Signed-off-by: ' "$MSG_FILE"; then
+  exit 0
+fi
+
+NAME="$(git config user.name || true)"
+EMAIL="$(git config user.email || true)"
+
+if [ -z "$NAME" ] || [ -z "$EMAIL" ]; then
+  # Fallback to author ident if local config missing
+  IDENT="$(git var GIT_AUTHOR_IDENT 2>/dev/null || echo ": <>")"
+  NAME="${NAME:-$(printf '%s' "$IDENT" | sed -E 's/ <.*$//') }"
+  EMAIL="${EMAIL:-$(printf '%s' "$IDENT" | sed -E 's/^.*<([^>]+)>.*/\1/') }"
+fi
+
+if [ -z "$NAME" ] || [ -z "$EMAIL" ]; then
+  echo "DCO: unable to determine user.name/user.email; please set them and retry" >&2
+  exit 1
+fi
+
+{
+  echo
+  echo "Signed-off-by: $NAME <$EMAIL>"
+} >> "$MSG_FILE"
+
+exit 0
+

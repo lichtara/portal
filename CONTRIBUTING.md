@@ -21,3 +21,26 @@ Bem-vinda(o)! Este guia resume como iniciar e colaborar.
 - Descreva contexto, motivação e escopo.
 - Abra PRs pequenos e focados; inclua notas de verificação.
 
+## DCO (Assinatura de commits)
+Este repositório exige conformidade com o Developer Certificate of Origin (DCO). Veja `DCO` na raiz do projeto.
+
+Ao criar commits, assine-os com `Signed-off-by:` usando:
+
+```
+git commit -s -m "feat: sua mensagem"
+```
+
+Para facilitar, habilite o hook local (já incluso no repo) que adiciona o sign-off automaticamente se faltar:
+
+```
+git config core.hooksPath .githooks
+```
+
+Se necessário, ajuste seu nome/e-mail de git:
+
+```
+git config user.name  "Seu Nome"
+git config user.email "seu.email@exemplo.com"
+```
+
+PRs sem DCO válido falharão na checagem de CI.
