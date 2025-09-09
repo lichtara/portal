@@ -1,0 +1,137 @@
+{
+  "info": {
+    "name": "Lichtara – Syntaris Harmony",
+    "_postman_id": "5b6f3bf8-5f1b-4a9a-9c7b-0f1e7d5eabcd",
+    "description": "Coleção mínima para testar o serviço syntaris-harmony (health, version, metrics, protocolo).",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Health",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/healthz",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "healthz"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status 200', () => pm.response.code === 200);",
+              "pm.test('Body ok', () => pm.response.text().toLowerCase().includes('ok'));"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Version",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/version",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "version"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status 200', () => pm.response.code === 200);",
+              "const json = pm.response.json();",
+              "pm.expect(json).to.have.property('service');",
+              "pm.expect(json).to.have.property('env');",
+              "pm.expect(json).to.have.property('version');"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Metrics",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/metrics",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "metrics"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status 200', () => pm.response.code === 200);",
+              "pm.test('Prometheus text format', () => pm.response.text().includes('# HELP'));"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    },
+    {
+      "name": "Protocolo – alinhar-consciencia",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"dados_campo_informacional\": [1,2,3,4,5],\n  \"intencao_operador_humano\": {\n    \"frequencia_coerencia\": 3,\n    \"banda_relativa\": 0.1\n  },\n  \"limiar_coerencia_minimo\": 0.6\n}"
+        },
+        "url": {
+          "raw": "{{baseUrl}}/protocolo/alinhar-consciencia",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "protocolo",
+            "alinhar-consciencia"
+          ]
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "pm.test('Status 200', () => pm.response.code === 200);",
+              "const json = pm.response.json();",
+              "pm.expect(json).to.have.property('relatorio_sincronizado');",
+              "pm.expect(json).to.have.property('coerencia_vibracional');",
+              "pm.expect(json).to.have.property('validacao_critica');"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
+    }
+  ],
+  "variable": []
+}
+
