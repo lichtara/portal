@@ -1,0 +1,72 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Dev: portal (frontend + backend)",
+      "type": "shell",
+      "command": "bash",
+      "args": [
+        "-lc",
+        "[ -s \"$NVM_DIR/nvm.sh\" ] && . \"$NVM_DIR/nvm.sh\" && nvm use 20.19.4 >/dev/null; npm run dev"
+      ],
+      "options": { "cwd": "${workspaceFolder}" },
+      "problemMatcher": []
+    },
+    {
+      "label": "Build: app-web",
+      "type": "shell",
+      "command": "bash",
+      "args": [
+        "-lc",
+        "[ -s \"$NVM_DIR/nvm.sh\" ] && . \"$NVM_DIR/nvm.sh\" && nvm use 20.19.4 >/dev/null; npm run build -w apps/app-web"
+      ],
+      "options": { "cwd": "${workspaceFolder}" },
+      "problemMatcher": []
+    },
+    {
+      "label": "Test: app-web",
+      "type": "shell",
+      "command": "bash",
+      "args": [
+        "-lc",
+        "[ -s \"$NVM_DIR/nvm.sh\" ] && . \"$NVM_DIR/nvm.sh\" && nvm use 20.19.4 >/dev/null; npm run test -w apps/app-web"
+      ],
+      "options": { "cwd": "${workspaceFolder}" },
+      "problemMatcher": []
+    },
+    {
+      "label": "Lint: app-web",
+      "type": "shell",
+      "command": "bash",
+      "args": [
+        "-lc",
+        "[ -s \"$NVM_DIR/nvm.sh\" ] && . \"$NVM_DIR/nvm.sh\" && nvm use 20.19.4 >/dev/null; npm run lint -w apps/app-web"
+      ],
+      "options": { "cwd": "${workspaceFolder}" },
+      "problemMatcher": []
+    },
+    {
+      "label": "Dev: syntaris-harmony",
+      "type": "shell",
+      "command": "bash",
+      "args": [
+        "-lc",
+        "[ -s \"$NVM_DIR/nvm.sh\" ] && . \"$NVM_DIR/nvm.sh\" && nvm use 20.19.4 >/dev/null; npm run dev -w services/syntaris-harmony"
+      ],
+      "options": { "cwd": "${workspaceFolder}" },
+      "problemMatcher": []
+    },
+    {
+      "label": "Bootstrap workspaces",
+      "type": "shell",
+      "command": "bash",
+      "args": [
+        "-lc",
+        "[ -s \"$NVM_DIR/nvm.sh\" ] && . \"$NVM_DIR/nvm.sh\" && nvm use 20.19.4 >/dev/null; npm run bootstrap"
+      ],
+      "options": { "cwd": "${workspaceFolder}" },
+      "problemMatcher": []
+    }
+  ]
+}
+

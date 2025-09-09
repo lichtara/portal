@@ -1,0 +1,30 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "pwa-node",
+      "request": "launch",
+      "name": "Debug: syntaris-harmony",
+      "runtimeExecutable": "node",
+      "runtimeArgs": [
+        "--watch"
+      ],
+      "program": "${workspaceFolder}/services/syntaris-harmony/server.js",
+      "cwd": "${workspaceFolder}",
+      "env": {
+        "PORT": "3000",
+        "NODE_ENV": "dev"
+      },
+      "console": "integratedTerminal"
+    },
+    {
+      "type": "pwa-chrome",
+      "request": "launch",
+      "name": "Debug: app-web (Vite)",
+      "url": "http://localhost:5173",
+      "webRoot": "${workspaceFolder}/apps/app-web",
+      "preLaunchTask": "Dev: portal (frontend + backend)"
+    }
+  ]
+}
+
