@@ -1,0 +1,18 @@
+name: CodeQL (disabled)
+
+on:
+  # Disabled by design: renamed to .disabled.yml to avoid conflict
+  # with repository Default setup for Code Scanning.
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+  security-events: write
+
+jobs:
+  analyze:
+    if: false  # guardrail; file name already prevents execution
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "CodeQL advanced workflow intentionally disabled. Use Default setup."
+

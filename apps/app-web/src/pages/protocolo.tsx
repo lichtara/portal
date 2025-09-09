@@ -12,7 +12,7 @@ type Resposta = {
   visualizacao_vibracional: Visualizacao
   coerencia_vibracional: number
   validacao_critica: { aprovado: boolean; limiar: number }
-  meta?: any
+  meta?: Record<string, unknown>
   erro?: string
 }
 
@@ -60,8 +60,9 @@ export default function ProtocoloPage() {
       const data = (await r.json()) as Resposta
       if (!r.ok) throw new Error(data?.erro || r.statusText)
       setResposta(data)
-    } catch (err: any) {
-      setErro(String(err?.message || err))
+    } catch (err) {
+      const message = err instanceof Error ? err.message : String(err)
+      setErro(message)
     } finally {
       setLoading(false)
     }
@@ -176,4 +177,3 @@ function Grafico({ visualizacao }: { visualizacao: Visualizacao }) {
     </svg>
   )
 }
-
