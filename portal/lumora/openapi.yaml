@@ -1,0 +1,87 @@
+openapi: 3.0.3
+info:
+  title: Lumora Service
+  version: 0.1.0
+servers:
+  - url: http://localhost:8000
+paths:
+  /run_lumora:
+    post:
+      summary: Run Lumora with a prompt
+      operationId: runLumora
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                content:
+                  type: string
+                  description: User prompt/content for Lumora
+                model:
+                  type: string
+                  description: Optional model override
+                temperature:
+                  type: number
+                  format: float
+                  description: Optional temperature override
+              required:
+                - content
+      responses:
+        '200':
+          description: Successful response
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  model:
+                    type: string
+                  temperature:
+                    type: number
+                  output:
+                    type: string
+        '400':
+          description: Bad request
+  /run_proposal:
+    post:
+      summary: Generate a formal proposal
+      operationId: runProposal
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                partner_name:
+                  type: string
+                scope:
+                  type: string
+                deliverables:
+                  type: array
+                  items:
+                    type: string
+                terms:
+                  type: string
+                format:
+                  type: string
+                  enum: [markdown, pdf]
+                  default: markdown
+              required: [partner_name, scope]
+      responses:
+        '200':
+          description: Proposal generated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  title:
+                    type: string
+                  content:
+                    type: string
+                  format:
+                    type: string
+
