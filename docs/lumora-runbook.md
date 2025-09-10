@@ -46,6 +46,7 @@ Fluxo: push na `main` → build imagem em GHCR → retag/push para `gcr.io/PROJE
 
 ## Métricas
 - Endpoint Prometheus: `GET /metrics`
+- Prometheus local: scrape jobs `lumora` (porta 8000) e `lumora-dev` (porta 8000 do container dev)
 
 ## Operação
 - Logs: padrão de FastAPI/Uvicorn.
