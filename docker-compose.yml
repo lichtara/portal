@@ -1,0 +1,51 @@
+version: "3.9"
+services:
+  lumora:
+    build: .
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - LUMORA_MODEL=${LUMORA_MODEL:-gpt-4o-mini}
+      - LUMORA_TEMPERATURE=${LUMORA_TEMPERATURE:-0.2}
+    ports:
+      - "8000:8000"
+    restart: unless-stopped
+
+  lumora-dev:
+    build: .
+    command: uvicorn lumora.service:app --host 0.0.0.0 --port 8000 --reload
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - LUMORA_MODEL=${LUMORA_MODEL:-gpt-4o-mini}
+      - LUMORA_TEMPERATURE=${LUMORA_TEMPERATURE:-0.2}
+    volumes:
+      - ./portal/lumora:/app/lumora:rw
+    ports:
+      - "8001:8000"
+    restart: unless-stopped
+
+  prometheus:
+    image: prom/prometheus:latest
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./prometheus/rules:/etc/prometheus/rules:ro
+    ports:
+      - "9090:9090"
+    depends_on:
+      - lumora
+    restart: unless-stopped
+
+  grafana:
+    image: grafana/grafana:10.4.2
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./grafana/provisioning:/etc/grafana/provisioning:ro
+      - ./grafana/dashboards:/var/lib/grafana/dashboards:ro
+    depends_on:
+      - prometheus
+    restart: unless-stopped

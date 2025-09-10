@@ -1,0 +1,84 @@
+{
+  "__inputs": [],
+  "__requires": [
+    { "type": "panel", "id": "graph", "name": "Graph", "version": "7.5.0" },
+    { "type": "datasource", "id": "prometheus", "name": "Prometheus", "version": "2.0.0" }
+  ],
+  "title": "Lumora API",
+  "time": { "from": "now-6h", "to": "now" },
+  "timezone": "browser",
+  "panels": [
+    {
+      "type": "graph",
+      "title": "Requests per second by status",
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "sum by (status) (rate(http_requests_total[5m]))",
+          "legendFormat": "{{status}}"
+        }
+      ],
+      "lines": true,
+      "fill": 3,
+      "linewidth": 1
+    },
+    {
+      "type": "graph",
+      "title": "Requests per second by handler",
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "sum by (handler) (rate(http_requests_total[5m]))",
+          "legendFormat": "{{handler}}"
+        }
+      ],
+      "lines": true,
+      "fill": 3,
+      "linewidth": 1
+    },
+    {
+      "type": "graph",
+      "title": "Latency p95 by handler (seconds)",
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket[5m])) by (le,handler))",
+          "legendFormat": "p95 {{handler}}"
+        }
+      ],
+      "lines": true,
+      "fill": 3,
+      "linewidth": 1
+    },
+    {
+      "type": "graph",
+      "title": "Latency p95 (seconds)",
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "histogram_quantile(0.95, sum(rate(http_request_duration_seconds_bucket[5m])) by (le))",
+          "legendFormat": "p95"
+        }
+      ],
+      "lines": true,
+      "fill": 3,
+      "linewidth": 1
+    },
+    {
+      "type": "graph",
+      "title": "Requests per second by method",
+      "datasource": "Prometheus",
+      "targets": [
+        {
+          "expr": "sum by (method) (rate(http_requests_total[5m]))",
+          "legendFormat": "{{method}}"
+        }
+      ],
+      "lines": true,
+      "fill": 3,
+      "linewidth": 1
+    }
+  ],
+  "schemaVersion": 27,
+  "version": 1
+}
