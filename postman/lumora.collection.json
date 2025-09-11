@@ -1,0 +1,53 @@
+{
+  "info": {
+    "name": "Lumora API",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Health",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/health"
+      }
+    },
+    {
+      "name": "Ready",
+      "request": {
+        "method": "GET",
+        "url": "{{base_url}}/ready"
+      }
+    },
+    {
+      "name": "Run Lumora",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"content\": \"Crie uma Proposta Lumora para a Aurora Research\"\n}"
+        },
+        "url": "{{base_url}}/run_lumora"
+      }
+    },
+    {
+      "name": "Run Proposal",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"partner_name\": \"Aurora Research\",\n  \"scope\": \"Documentação e portal público\"\n}"
+        },
+        "url": "{{base_url}}/run_proposal"
+      }
+    }
+  ],
+  "variable": [
+    { "key": "base_url", "value": "http://localhost:8000" }
+  ]
+}
