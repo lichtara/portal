@@ -1,0 +1,93 @@
+site_name: Lichtara OS - Declaração de Propósito
+site_description: Documentação da declaração de propósito do projeto Lichtara OS
+site_author: Debora Lutz
+
+# Configuração do tema
+theme:
+  name: material
+  language: pt
+  palette:
+    - scheme: default
+      primary: deep purple
+      accent: amber
+      toggle:
+        icon: material/brightness-7
+        name: Mudar para modo escuro
+    - scheme: slate
+      primary: deep purple
+      accent: amber
+      toggle:
+        icon: material/brightness-4
+        name: Mudar para modo claro
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - search.highlight
+    - content.code.copy
+
+# Estrutura de navegação
+nav:
+  - Início: index.md
+  - Visão Geral: visao-geral.md
+  - Missão e Valores: missao-valores.md
+  - Objetivos: objetivos.md
+  - Roadmap: roadmap.md
+  - Contribuição: contribuicao.md
+  - Anexos:
+    - Referências e Inspirações: anexos/referencias-e-inspiracoes.md
+    - Cronograma Detalhado: anexos/cronograma-detalhado.md
+    - Especificações Técnicas: anexos/especificacoes-tecnicas-preliminares.md
+    - Estudos de Caso: anexos/estudos-de-caso.md
+    - Protocolos Vibracionais: anexos/anexo-a-protocolos-escuta.md
+    - Métricas de Validação: anexos/anexo-b-metricas.md
+    - Casos Práticos: anexos/anexo-c-casos-estudo.md
+
+# Plugins
+plugins:
+  - search:
+      lang: pt
+  - git-revision-date-localized:
+      type: date
+
+# Configurações do Markdown
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.tabbed:
+      alternate_style: true
+  - attr_list
+  - md_in_html
+  - toc:
+      permalink: true
+
+# Configuração do repositório
+repo_url: https://github.com/lichtara-io/declaracao-de-proposito
+repo_name: lichtara-io/declaracao-de-proposito
+edit_uri: edit/main/docs/
+
+# Diretório de documentos
+docs_dir: docs
+site_dir: site
+
+# Configuração SEO e metadados
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/lichtara-io
+      name: GitHub da Organização
+    - icon: fontawesome/solid/globe
+      link: https://lichtara-os.org
+      name: Site Oficial
+  analytics:
+    provider: google
+    property: !ENV GOOGLE_ANALYTICS_KEY
+  generator: false
+  version:
+    provider: mike

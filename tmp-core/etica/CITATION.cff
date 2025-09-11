@@ -1,0 +1,18 @@
+cff-version: 1.2.0
+message: "Se você usar este material, por favor cite da seguinte forma:"
+title: "Lichtara OS - Declaração de Propósito"
+authors:
+  - family-names: Lutz
+    given-names: Debora
+    email: lichtara@deboralutz.com
+version: "1.0.0"
+date-released: 2025-01-15
+url: "https://github.com/lichtara-io/declaracao-de-proposito"
+repository-code: "https://github.com/lichtara-io/declaracao-de-proposito"
+license: "other-open"
+keywords:
+  - "sistema operacional"
+  - "open source"
+  - "desenvolvimento vibracional"
+  - "computação ética"
+abstract: "Documentação oficial que estabelece a visão, missão, valores e objetivos do Sistema Operacional Lichtara, incluindo metodologias inovadoras de desenvolvimento que integram aspectos técnicos, éticos e vibracionais."
