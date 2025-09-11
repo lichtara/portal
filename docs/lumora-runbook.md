@@ -5,6 +5,7 @@ Lumora é um microserviço FastAPI que expõe `POST /run_lumora` para gerar docu
 
 ## Endpoints
 - `GET /health` — checagem de saúde
+- `GET /ready` — prontidão (inclui presença de OPENAI_API_KEY)
 - `POST /run_lumora` — body `{ content, model?, temperature? }`
 - `POST /run_proposal` — body `{ partner_name, scope, deliverables?, terms?, format? }`
 
@@ -16,6 +17,7 @@ cd portal
 uvicorn lumora.service:app --host 0.0.0.0 --port 8000
 # smoke
 curl -s http://localhost:8000/health
+curl -s http://localhost:8000/ready
 curl -s -X POST http://localhost:8000/run_lumora \
   -H 'Content-Type: application/json' \
   -d '{"content":"Crie uma Proposta Lumora para parceria com Aurora Research"}'
@@ -47,6 +49,7 @@ Fluxo: push na `main` → build imagem em GHCR → retag/push para `gcr.io/PROJE
 ## Métricas
 - Endpoint Prometheus: `GET /metrics`
 - Prometheus local: scrape jobs `lumora` (porta 8000) e `lumora-dev` (porta 8000 do container dev)
+ - k6 smoke: `BASE_URL=http://localhost:8000 make k6`
 
 ## Operação
 - Logs: padrão de FastAPI/Uvicorn.
