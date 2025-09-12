@@ -2,6 +2,8 @@ version: "3.9"
 services:
   lumora:
     build: .
+    env_file:
+      - .env
     environment:
       - OPENAI_API_KEY=${OPENAI_API_KEY}
       - LUMORA_MODEL=${LUMORA_MODEL:-gpt-4o-mini}
@@ -9,10 +11,17 @@ services:
     ports:
       - "8000:8000"
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:8000/ready || wget -qO- http://127.0.0.1:8000/health || exit 1"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
 
   lumora-dev:
     build: .
     command: uvicorn lumora.service:app --host 0.0.0.0 --port 8000 --reload
+    env_file:
+      - .env
     environment:
       - OPENAI_API_KEY=${OPENAI_API_KEY}
       - LUMORA_MODEL=${LUMORA_MODEL:-gpt-4o-mini}
@@ -22,6 +31,11 @@ services:
     ports:
       - "8001:8000"
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:8000/ready || wget -qO- http://127.0.0.1:8000/health || exit 1"]
+      interval: 10s
+      timeout: 3s
+      retries: 10
 
   prometheus:
     image: prom/prometheus:latest

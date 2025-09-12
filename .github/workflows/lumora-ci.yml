@@ -1,0 +1,61 @@
+name: lumora-ci
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+permissions:
+  contents: read
+  packages: write
+
+env:
+  IMAGE_NAME_GHCR: ghcr.io/${{ github.repository_owner }}/lumora
+  PYTHON_VERSION: '3.11'
+
+jobs:
+  syntax-check:
+    name: Python syntax check
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ env.PYTHON_VERSION }}
+      - name: Install deps (minimal)
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt || true
+      - name: Compile modules
+        run: |
+          python -m py_compile $(git ls-files '*.py')
+
+  docker-build-push:
+    name: Build and push container (GHCR)
+    runs-on: ubuntu-latest
+    needs: syntax-check
+    steps:
+      - uses: actions/checkout@v4
+      - name: Log in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Set tags
+        id: tags
+        run: |
+          echo "sha=${{ env.IMAGE_NAME_GHCR }}:${{ github.sha }}" >> $GITHUB_OUTPUT
+          if [[ "${GITHUB_REF}" == "refs/heads/main" ]]; then
+            echo "latest=${{ env.IMAGE_NAME_GHCR }}:latest" >> $GITHUB_OUTPUT
+          fi
+      - name: Build image
+        run: |
+          docker build -t ${{ steps.tags.outputs.sha }} .
+          if [ -n "${{ steps.tags.outputs.latest }}" ]; then docker tag ${{ steps.tags.outputs.sha }} ${{ steps.tags.outputs.latest }}; fi
+      - name: Push image
+        run: |
+          docker push ${{ steps.tags.outputs.sha }}
+          if [ -n "${{ steps.tags.outputs.latest }}" ]; then docker push ${{ steps.tags.outputs.latest }}; fi
+

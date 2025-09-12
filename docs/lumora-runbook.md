@@ -27,14 +27,19 @@ curl -s -X POST http://localhost:8000/run_proposal \
 ```
 
 ## Deploy (Cloud Run)
-- Build e deploy automáticos via GitHub Actions (branch `main`).
-- Secrets necessários no repo:
-  - `GCP_PROJECT_ID` (ex.: `meu-projeto-gcp`)
-  - `GCP_SA_KEY` (JSON do service account com Cloud Run Admin + Storage/Artifact/Container pull)
-  - `OPENAI_API_KEY`
-  - Opcional: `GCP_REGION` (default `sa-east1`), `LUMORA_MODEL`, `LUMORA_TEMPERATURE`
+Build e deploy automáticos via GitHub Actions.
 
-Fluxo: push na `main` → build imagem em GHCR → retag/push para `gcr.io/PROJECT` → `gcloud run deploy` com env vars.
+1) Configurar segredos (uma vez)
+```bash
+bash scripts/configure-secrets.sh
+```
+Solicita: `GCP_PROJECT_ID`, `GCP_REGION` (default sa-east1), caminho do `GCP_SA_KEY` (JSON) e `OPENAI_API_KEY`.
+
+2) Disparar release
+```bash
+bash scripts/release-lumora.sh sa-east1 lumora
+```
+O pipeline retaga a imagem (GHCR → GCR) e faz deploy no Cloud Run com Secret Manager.
 
 ## ChatGPT Actions
 - Arquivo: `portal/lumora/openapi.yaml`
