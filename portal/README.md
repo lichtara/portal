@@ -16,7 +16,7 @@ API em `http://localhost:8000`. Grafana em `http://localhost:3000`.
 export OPENAI_API_KEY=...
 docker compose -f portal/compose.yaml up --build
 ```
-Este compose usa o Dockerfile canônico do monorepo (`../Dockerfile`).
+Este compose usa o Dockerfile canônico do monorepo (`Dockerfile`, com `context: ..`).
 
 ### Variáveis de ambiente
 - `OPENAI_API_KEY` (obrigatório)
