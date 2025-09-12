@@ -1,0 +1,51 @@
+{
+  "name": "Notion → Lumora (Cloud Run) → GitHub PR",
+  "description": "Cria PR no GitHub a partir de item de Proposta no Notion processado pelo serviço Lumora",
+  "trigger": {
+    "app": "notion",
+    "event": "new_database_item",
+    "config": {
+      "database_id": "REPLACE_WITH_DB_ID",
+      "filters": [
+        { "property": "Tipo", "equals": "Proposta" }
+      ]
+    }
+  },
+  "actions": [
+    {
+      "app": "webhooks",
+      "event": "POST",
+      "name": "Call Lumora /run_proposal",
+      "config": {
+        "url": "https://REPLACE_CLOUD_RUN_URL/run_proposal",
+        "headers": { "Content-Type": "application/json" },
+        "payload": {
+          "partner_name": "{{trigger.title}}",
+          "scope": "{{trigger.scope}}",
+          "deliverables": "{{trigger.deliverables}}",
+          "terms": "{{trigger.terms}}",
+          "format": "markdown"
+        }
+      }
+    },
+    {
+      "app": "github",
+      "event": "create_pull_request",
+      "name": "Create Pull Request",
+      "config": {
+        "owner": "lichtara",
+        "repo": "portal",
+        "base": "main",
+        "head": "codex/lumora-from-zap",
+        "title": "feat(proposta): {{trigger.title}}",
+        "body": "Proposta gerada via Lumora (Zapier). Coautoria humano–IA reconhecida.",
+        "changes": [
+          {
+            "path": "inbox/lumora-{{zap_meta_timestamp}}.md",
+            "content": "{{steps.webhook.outputs.output || steps.webhook.outputs.content}}"
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -24,7 +24,7 @@ curl -s -X POST https://SEU-HOST/run_lumora \
 
 ## 2) Zapier AI Actions (OpenAPI)
 1. Em Zapier, acesse AI Actions e crie uma nova conexão.
-2. Importe `portal/lumora/openapi.yaml` do seu repositório (ou forneça a URL pública do schema).
+2. Importe `portal/lumora/openapi.yaml` do seu repositório (ou forneça a URL pública do schema em `<CLOUD_RUN_URL>/openapi.json`).
 3. Atualize o `servers[0].url` para a URL pública do serviço (Cloud Run/Render/etc.).
 4. Habilite a ação `runLumora`.
 5. No Zap, adicione "AI Action" e selecione `runLumora`; mapeie o campo `content`.
@@ -41,3 +41,4 @@ curl -s -X POST https://SEU-HOST/run_lumora \
 Dicas:
 - Padronize prompts no Notion (ex.: propriedades: `audience`, `scope`, `deliverables`).
 - Mantenha env `OPENAI_API_KEY` seguro no serviço Lumora (nunca nos Zaps).
+- Export do Zap: salve um JSON do editor em `zap/exports/`. Exemplo: `zap/exports/lumora-notion-pr.sample.json`.
