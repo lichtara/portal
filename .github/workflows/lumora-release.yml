@@ -1,0 +1,86 @@
+name: lumora-release
+
+on:
+  workflow_dispatch:
+    inputs:
+      region:
+        description: GCP region
+        required: false
+        default: sa-east1
+      service_name:
+        description: Cloud Run service name
+        required: false
+        default: lumora
+
+permissions:
+  contents: read
+  packages: read
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Auth GCP
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+      - name: Setup gcloud
+        uses: google-github-actions/setup-gcloud@v2
+        with:
+          project_id: ${{ secrets.GCP_PROJECT_ID }}
+      - name: Enable required APIs
+        run: |
+          gcloud services enable run.googleapis.com secretmanager.googleapis.com artifactregistry.googleapis.com
+      - name: Configure Docker for Artifact Registry
+        env:
+          REGION: ${{ inputs.region }}
+        run: |
+          REGION=${REGION:-sa-east1}
+          gcloud auth configure-docker "${REGION}-docker.pkg.dev" --quiet
+      - name: Ensure Artifact Registry repo exists
+        continue-on-error: true
+        env:
+          REGION: ${{ inputs.region }}
+        run: |
+          REGION=${REGION:-sa-east1}
+          gcloud artifacts repositories describe lumora --location "$REGION" >/dev/null 2>&1 || \
+          gcloud artifacts repositories create lumora --repository-format=docker --location "$REGION"
+      - name: Pull GHCR image and retag to Artifact Registry
+        env:
+          REGION: ${{ inputs.region }}
+          GHCR_IMAGE: ghcr.io/${{ github.repository_owner }}/lumora:${{ github.sha }}
+        run: |
+          REGION=${REGION:-sa-east1}
+          AR_IMAGE="$REGION-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/lumora/lumora:${{ github.sha }}"
+          echo ${{ secrets.GITHUB_TOKEN }} | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+          docker pull "$GHCR_IMAGE" || { echo "Image not found for SHA; building"; docker build -t "$GHCR_IMAGE" .; }
+          docker tag "$GHCR_IMAGE" "$AR_IMAGE"
+          docker push "$AR_IMAGE"
+          echo "AR_IMAGE=$AR_IMAGE" >> $GITHUB_ENV
+      - name: (Optional) Sync OPENAI_API_KEY to Secret Manager
+        if: ${{ secrets.GCP_SYNC_SECRETS == 'true' && secrets.OPENAI_API_KEY != '' }}
+        continue-on-error: true
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+        run: |
+          if gcloud secrets describe OPENAI_API_KEY >/dev/null 2>&1; then
+            echo -n "$OPENAI_API_KEY" | gcloud secrets versions add OPENAI_API_KEY --data-file=-
+          else
+            echo "Secret OPENAI_API_KEY não existe ou sem permissão para criar; pulando sincronização"
+          fi
+      - name: Deploy to Cloud Run
+        env:
+          REGION: ${{ inputs.region }}
+          SERVICE_NAME: ${{ inputs.service_name }}
+        run: |
+          REGION=${REGION:-sa-east1}
+          SERVICE_NAME=${SERVICE_NAME:-lumora}
+          gcloud run deploy "$SERVICE_NAME" \
+            --image "${{ env.AR_IMAGE }}" \
+            --platform managed \
+            --region "$REGION" \
+            --allow-unauthenticated \
+            --set-secrets OPENAI_API_KEY=OPENAI_API_KEY:latest \
+            --set-env-vars LUMORA_MODEL=${{ secrets.LUMORA_MODEL || 'gpt-4o-mini' }},LUMORA_TEMPERATURE=${{ secrets.LUMORA_TEMPERATURE || '0.2' }}
+
