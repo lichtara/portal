@@ -1,0 +1,21 @@
+services:
+  lumora:
+    build:
+      # Build from the monorepo root using the canonical Dockerfile
+      context: ..
+      dockerfile: Dockerfile
+    container_name: lumora
+    restart: unless-stopped
+    environment:
+      - OPENAI_API_KEY=${OPENAI_API_KEY}
+      - LUMORA_MODEL=${LUMORA_MODEL:-gpt-4o-mini}
+      - LUMORA_TEMPERATURE=${LUMORA_TEMPERATURE:-0.2}
+      - LUMORA_CORS_ORIGINS=${LUMORA_CORS_ORIGINS}
+    ports:
+      - "8000:8000"
+    networks:
+      - lumora-net
+
+networks:
+  lumora-net:
+    driver: bridge
