@@ -1,0 +1,25 @@
+services:
+  python-lumora:
+    build:
+      context: ./lumora
+      dockerfile: ../lumoraDockerfile
+    container_name: python-lumora
+    restart: unless-stopped
+    init: true
+    ports:
+      - "8000:8000"  # Expose FastAPI HTTP API
+    # env_file: ./lumora/.env  # Uncomment if .env file exists
+    environment:
+      # Required for OpenAI API access (must be set at runtime)
+      # OPENAI_API_KEY: "your-openai-api-key"  # Do NOT put secrets here
+      # Optional configuration (can be set at runtime or via .env)
+      # LUMORA_MODEL: "gpt-4o-mini"
+      # LUMORA_TEMPERATURE: "0.2"
+      # LUMORA_CORS_ORIGINS: "https://seu-site.com,https://app.exemplo.com"
+    # No external dependencies detected (database, cache, etc.)
+    # If you add Prometheus or Grafana, see README for example compose additions
+
+networks:
+  default:
+    name: lumora-net
+    driver: bridge

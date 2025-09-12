@@ -1,0 +1,61 @@
+# Python bytecode and cache
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+.coverage
+
+# IDE/editor files
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Version control
+.git/
+.gitignore
+.svn/
+.hg/
+
+# Environment and secrets
+.env*
+*.env
+*.pem
+*.key
+*.crt
+config.local.*
+*.local.yml
+
+# Build and output directories
+build/
+dist/
+out/
+tmp/
+temp/
+*.tmp
+local/
+.local/
+debug/
+*.log
+
+# Documentation and markdown
+README*
+*.md
+docs/
+
+# Docker and Compose files
+Dockerfile*
+docker-compose*
+
+# System and OS files
+.DS_Store
+
+# Project-specific: test directories (none detected, but general rule)
+test/
+tests/
+
+# Project-specific: skip JSON and YAML configs only if not needed (keep LumoraAgentSpec.json and openapi.yaml)
+# (No exclusion for .json or .yaml as they are needed)
+
+# Project-specific: skip template markdowns if not needed (but likely needed, so not excluded)
+# (No exclusion for lumora/templates/*.md)
