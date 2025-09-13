@@ -77,4 +77,5 @@ jobs:
             --region "$REGION" \
             --allow-unauthenticated \
             --set-secrets OPENAI_API_KEY=OPENAI_API_KEY:latest \
+            --set-secrets GH_ACTIONS_TOKEN=GH_ACTIONS_TOKEN:latest \
             --set-env-vars LUMORA_MODEL=${{ secrets.LUMORA_MODEL || 'gpt-4o-mini' }},LUMORA_TEMPERATURE=${{ secrets.LUMORA_TEMPERATURE || '0.2' }}

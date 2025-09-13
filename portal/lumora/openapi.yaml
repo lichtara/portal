@@ -84,4 +84,52 @@ paths:
                     type: string
                   format:
                     type: string
-
+  /ops/trigger_release:
+    post:
+      summary: Trigger lumora-release workflow
+      operationId: triggerRelease
+      requestBody:
+        required: false
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                region:
+                  type: string
+                service_name:
+                  type: string
+                ref:
+                  type: string
+                  default: main
+      responses:
+        '200':
+          description: Dispatch accepted
+          content:
+            application/json:
+              schema:
+                type: object
+  /ops/run_e2e:
+    post:
+      summary: Trigger E2E smoke test
+      operationId: triggerE2E
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [service_url]
+              properties:
+                service_url:
+                  type: string
+                ref:
+                  type: string
+                  default: main
+      responses:
+        '200':
+          description: Dispatch accepted
+          content:
+            application/json:
+              schema:
+                type: object
