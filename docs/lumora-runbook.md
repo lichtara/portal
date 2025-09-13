@@ -44,7 +44,8 @@ O pipeline retaga a imagem (GHCR → GCR) e faz deploy no Cloud Run com Secret M
 ## ChatGPT Actions
 - Arquivo: `portal/lumora/openapi.yaml`
 - Ajuste `servers[0].url` para a URL do Cloud Run (ex.: `https://lumora-xxxx.a.run.app`).
-- Importe no ChatGPT (Actions) e habilite a ação `runLumora`.
+- Ou importe direto `https://<CLOUD_RUN_URL>/openapi.json` no Builder (Actions).
+- Habilite as ações `runLumora` e `runProposal` e faça um teste.
 
 ## Zapier
 - Opção 1 (Webhooks by Zapier): faça `POST https://<host>/run_lumora` com `{ "content": "..." }`.
