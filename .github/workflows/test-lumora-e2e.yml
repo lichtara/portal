@@ -1,0 +1,46 @@
+name: Test Lumora E2E
+
+on:
+  workflow_dispatch:
+    inputs:
+      service_url:
+        description: 'URL of the deployed Lumora service (from release logs)'
+        required: true
+
+jobs:
+  smoke-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ensure jq is available
+        run: |
+          if ! command -v jq >/dev/null 2>&1; then
+            sudo apt-get update
+            sudo apt-get install -y jq
+          fi
+      - name: Test /health endpoint
+        run: |
+          echo "Testing GET ${{ inputs.service_url }}/health"
+          curl -sfS --fail-with-body ${{ inputs.service_url }}/health
+
+      - name: Test /ready endpoint
+        run: |
+          echo "Testing GET ${{ inputs.service_url }}/ready"
+          curl -sfS --fail-with-body ${{ inputs.service_url }}/ready
+
+      - name: Test /openapi.json endpoint
+        run: |
+          echo "Testing GET ${{ inputs.service_url }}/openapi.json"
+          curl -sfS --fail-with-body ${{ inputs.service_url }}/openapi.json | jq .
+
+      - name: Test /run_proposal endpoint
+        run: |
+          echo "Testing POST ${{ inputs.service_url }}/run_proposal"
+          RESPONSE=$(curl -sfS --fail-with-body -X POST "${{ inputs.service_url }}/run_proposal" \
+            -H "Content-Type: application/json" \
+            -d '{"partner_name":"Aurora Research","scope":"Docs e portal público","format":"markdown"}')
+          
+          echo "Response from /run_proposal:"
+          echo "$RESPONSE"
+          # Accept both shapes: run_proposal -> {title, content, format} and run_lumora -> {output}
+          echo "$RESPONSE" | jq -e 'has("content") or has("output")' > /dev/null
+          echo "✅ /run_proposal OK (payload contém 'content' ou 'output')."
