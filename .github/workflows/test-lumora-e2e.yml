@@ -20,22 +20,22 @@ jobs:
       - name: Test /health endpoint
         run: |
           echo "Testing GET ${{ inputs.service_url }}/health"
-          curl -sfS --fail-with-body ${{ inputs.service_url }}/health
+          curl -fsS ${{ inputs.service_url }}/health
 
       - name: Test /ready endpoint
         run: |
           echo "Testing GET ${{ inputs.service_url }}/ready"
-          curl -sfS --fail-with-body ${{ inputs.service_url }}/ready
+          curl -fsS ${{ inputs.service_url }}/ready
 
       - name: Test /openapi.json endpoint
         run: |
           echo "Testing GET ${{ inputs.service_url }}/openapi.json"
-          curl -sfS --fail-with-body ${{ inputs.service_url }}/openapi.json | jq .
+          curl -fsS ${{ inputs.service_url }}/openapi.json | jq .
 
       - name: Test /run_proposal endpoint
         run: |
           echo "Testing POST ${{ inputs.service_url }}/run_proposal"
-          RESPONSE=$(curl -sfS --fail-with-body -X POST "${{ inputs.service_url }}/run_proposal" \
+          RESPONSE=$(curl -fsS -X POST "${{ inputs.service_url }}/run_proposal" \
             -H "Content-Type: application/json" \
             -d '{"partner_name":"Aurora Research","scope":"Docs e portal público","format":"markdown"}')
           
