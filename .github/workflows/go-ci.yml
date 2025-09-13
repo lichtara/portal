@@ -1,0 +1,88 @@
+name: Go CI
+
+on:
+  push:
+    branches: [ main ]
+    paths:
+      - '**/*.go'
+      - '**/go.mod'
+      - '**/go.sum'
+      - 'go.work'
+  pull_request:
+    branches: [ main ]
+    paths:
+      - '**/*.go'
+      - '**/go.mod'
+      - '**/go.sum'
+      - 'go.work'
+
+permissions:
+  contents: read
+  pull-requests: read
+
+concurrency:
+  group: go-ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    name: Build • Test • Lint
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.22'
+          cache: true
+
+      - name: Detect Go module dir
+        id: godir
+        run: |
+          if [ -f go.work ] || [ -f go.mod ]; then
+            echo "dir=." >> $GITHUB_OUTPUT
+          elif [ -f go/go.mod ]; then
+            echo "dir=go" >> $GITHUB_OUTPUT
+          else
+            echo "dir=." >> $GITHUB_OUTPUT
+          fi
+          echo "Using Go dir: $(sed -n 's/dir=//p' $GITHUB_OUTPUT)"
+
+      - name: Go env
+        working-directory: ${{ steps.godir.outputs.dir }}
+        run: |
+          go env
+          go version
+
+      - name: Download deps
+        working-directory: ${{ steps.godir.outputs.dir }}
+        run: go mod download || true
+
+      - name: Build
+        working-directory: ${{ steps.godir.outputs.dir }}
+        run: go build -v ./...
+
+      - name: Test (race + cover)
+        working-directory: ${{ steps.godir.outputs.dir }}
+        run: |
+          go test -race -covermode=atomic -coverprofile=coverage.out ./... || true
+          [ -f coverage.out ] && go tool cover -func=coverage.out | tail -n 1 || echo "no coverage"
+
+      - name: Upload coverage artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: go-coverage
+          path: ${{ steps.godir.outputs.dir }}/coverage.out
+          if-no-files-found: ignore
+          retention-days: 7
+
+      - name: Lint (golangci-lint)
+        uses: golangci/golangci-lint-action@v6
+        with:
+          version: v1.57.2
+          working-directory: ${{ steps.godir.outputs.dir }}
+          args: --timeout=5m
+
