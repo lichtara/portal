@@ -1,4 +1,7 @@
-{"level":30,"time":1757202273328,"pid":32245,"hostname":"MacBook-Air-de-Debora.local","msg":"listening","service":"syntaris-harmony","env":"dev","version":"dev","port":3000}
-{"level":30,"time":1757202273338,"pid":32245,"hostname":"MacBook-Air-de-Debora.local","msg":"request","service":"syntaris-harmony","env":"dev","version":"dev","http":{"method":"GET","path":"/healthz","status":200,"duration_ms":7}}
-{"level":30,"time":1757202273347,"pid":32245,"hostname":"MacBook-Air-de-Debora.local","msg":"request","service":"syntaris-harmony","env":"dev","version":"dev","http":{"method":"GET","path":"/health","status":200,"duration_ms":0}}
-{"level":30,"time":1757202273355,"pid":32245,"hostname":"MacBook-Air-de-Debora.local","msg":"request","service":"syntaris-harmony","env":"dev","version":"dev","http":{"method":"GET","path":"/version","status":200,"duration_ms":1}}
+
+> syntaris-harmony@0.1.0 dev
+> node --watch server.js
+
+{"level":30,"time":1757783514044,"pid":64383,"hostname":"MacBook-Air-de-Debora.local","msg":"listening","service":"syntaris-harmony","env":"dev","version":"dev","port":3000}
+{"level":30,"time":1757783514859,"pid":64383,"hostname":"MacBook-Air-de-Debora.local","msg":"request","service":"syntaris-harmony","env":"dev","version":"dev","http":{"method":"GET","path":"/healthz","status":200,"duration_ms":4}}
+{"level":30,"time":1757783514956,"pid":64383,"hostname":"MacBook-Air-de-Debora.local","msg":"request","service":"syntaris-harmony","env":"dev","version":"dev","http":{"method":"POST","path":"/protocolo/alinhar-consciencia","status":200,"duration_ms":1}}

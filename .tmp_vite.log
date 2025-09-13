@@ -1,11 +1,13 @@
 
 > app-web@0.0.1 dev
-> vite
+> vite --port 5173
 
 [sentry-vite-plugin] Warning: No auth token provided. Will not create release. Please set the `authToken` option. You can find information on how to generate a Sentry auth token here: https://docs.sentry.io/api/auth/
 [sentry-vite-plugin] Warning: No auth token provided. Will not upload source maps. Please set the `authToken` option. You can find information on how to generate a Sentry auth token here: https://docs.sentry.io/api/auth/
 
-  VITE v5.4.19  ready in 680 ms
+  VITE v5.4.19  ready in 644 ms
 
   ➜  Local:   http://localhost:5173/
   ➜  Network: use --host to expose
+✘ [ERROR] The build was canceled
+
